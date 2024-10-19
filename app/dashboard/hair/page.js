@@ -16,6 +16,7 @@ import {
   ResponsiveContainer
 } from 'recharts'
 import HairProductTable from '@/app/components/HairProductTable'
+import Link from 'next/link'
 
 const salesDataHair = [
   { name: 'Jan', shampoo: 3000, conditioner: 1500, hairspray: 1000 },
@@ -177,10 +178,14 @@ export default function HairProductDashboard() {
               </CardHeader>
               <CardContent className="grid gap-4">
                 <Button className="w-full">
-                  <Plus className="mr-2 h-4 w-4" /> Add New Hair Product
+                  <Link href="/" className="flex">
+                    <Plus className="mr-2 h-4 w-4" /> Add New Hair Product
+                  </Link>
                 </Button>
-                <Button className="w-full">
-                  <Plus className="mr-2 h-4 w-4" /> View Hair Product Inventory
+                <Button className="w-full" >
+                  <Link href="/dashboard/hair/inventory" className="flex">
+                    <Plus className="mr-2 h-4 w-4" /> View Hair Product Inventory
+                  </Link>
                 </Button>
                 <Button className="w-full" variant="outline">
                   Generate Sales Report
