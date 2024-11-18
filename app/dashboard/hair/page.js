@@ -43,7 +43,7 @@ export default function HairProductDashboard() {
   const [timeFilter, setTimeFilter] = useState('today')
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-8 pt-6 overflow-hidden">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Hair Product Dashboard</h2>
         <div className="flex items-center space-x-2">
@@ -154,6 +154,7 @@ export default function HairProductDashboard() {
               </CardContent>
             </Card>
           </div>
+     
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
             <Card className="col-span-4">
               <CardHeader>
@@ -178,7 +179,7 @@ export default function HairProductDashboard() {
               </CardHeader>
               <CardContent className="grid gap-4">
                 <Button className="w-full">
-                  <Link href="/" className="flex">
+                  <Link href="/dashboard/hair/create" className="flex">
                     <Plus className="mr-2 h-4 w-4" /> Add New Hair Product
                   </Link>
                 </Button>
