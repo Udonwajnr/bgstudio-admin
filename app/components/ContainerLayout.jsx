@@ -30,22 +30,22 @@ export default function Layout({ children }) {
           <Package className="mr-3 h-5 w-5" />
           Poultry Products
         </Link>
-        <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+        <Link href="/dashboard/orders" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
           <ShoppingCart className="mr-3 h-5 w-5" />
           Orders
+        </Link>
+        <Link href="/dashboard/booking" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <FileText className="mr-3 h-5 w-5" />
+          Bookings
         </Link>
         <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
           <Loader2 className="mr-3 h-5 w-5" />
           Inventory
         </Link>
-        <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          <FileText className="mr-3 h-5 w-5" />
-          Appointments
-        </Link>
-        <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+        {/* <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
           <Cog className="mr-3 h-5 w-5" />
           Settings
-        </Link>
+        </Link> */}
       </nav>
     </>
   )
