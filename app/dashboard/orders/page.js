@@ -87,7 +87,7 @@ export default function OrderPage() {
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Order Management</h1>
-      <Tabs defaultValue='Overview' className="space-y-4">
+      <Tabs defaultValue='Hair' className="space-y-4">
         <TabsList>
             <TabsTrigger value="Hair">Hair</TabsTrigger>
           <TabsTrigger value="Poultry">Poultry</TabsTrigger>

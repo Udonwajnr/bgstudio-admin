@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { motion } from "framer-motion"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -66,7 +67,11 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-white p-4">
       <Card className="w-full max-w-4xl shadow-xl">
         <div className="md:flex">
-          <div className="md:w-1/2 bg-indigo-600 text-white p-8 flex flex-col justify-center rounded-l-lg">
+          <motion.div className="md:w-1/2 bg-indigo-600 text-white p-8 flex flex-col justify-center rounded-l-lg"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <CardHeader className="space-y-1">
               <div className="w-24 h-24 mx-auto mb-4">
                 <svg
@@ -90,8 +95,12 @@ export default function RegisterPage() {
                 Join our team and take control of your business with our powerful admin tools.
               </p>
             </CardContent>
-          </div>
-          <div className="md:w-1/2 p-8">
+          </motion.div>
+          <motion.div className="md:w-1/2 p-8"
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
@@ -155,7 +164,7 @@ export default function RegisterPage() {
                 </Link>
               </p>
             </form>
-          </div>
+          </motion.div>
         </div>
       </Card>
     </div>
