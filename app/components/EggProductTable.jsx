@@ -6,6 +6,7 @@ import {
   ChevronDownIcon,
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons"
+import { Plus } from "lucide-react"
 import {
   flexRender,
   getCoreRowModel,
@@ -35,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Link from "next/link"
 
 const data = [
   {
@@ -160,6 +162,7 @@ const columns = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>View product details</DropdownMenuItem>
             <DropdownMenuItem>Edit product</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-500">Delete product</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -229,6 +232,12 @@ export default function EggProductTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        
+        <Link href={"/dashboard/poultry/create"}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add New Product
+          </Button>
+       </Link>
       </div>
       <div className="rounded-md border">
         <Table>

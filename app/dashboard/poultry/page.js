@@ -112,9 +112,9 @@ export default function EggSalesDashboard() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 overflow-hidden">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Egg Sales Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Poultry Dashboard</h2>
         <div className="flex items-center space-x-2">
-          <Button>Download Egg Sales Report</Button>
+          <Button>Download Poultry Sales Report</Button>
         </div>
       </div>
       <Tabs defaultValue="Overview" className="space-y-4">
@@ -265,7 +265,7 @@ export default function EggSalesDashboard() {
           <EggProductTable />
         </TabsContent>
 
-        <TabsContent value='Inventory' classNAme='space-y-4'>
+        <TabsContent value='Inventory' className='space-y-4'>
                   <PoultryInventory/>
         </TabsContent>
 
