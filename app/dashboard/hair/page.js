@@ -17,7 +17,8 @@ import {
 } from 'recharts'
 import HairProductTable from '@/app/components/HairProductTable'
 import Link from 'next/link'
-
+import HairInventory from '@/app/components/hair/HairInventory'
+import HairOrder from '@/app/components/hair/HairOrders'
 const salesDataHair = [
   { name: 'Jan', shampoo: 3000, conditioner: 1500, hairspray: 1000 },
   { name: 'Feb', shampoo: 2500, conditioner: 1200, hairspray: 800 },
@@ -195,6 +196,14 @@ export default function HairProductDashboard() {
             </Card>
           </div>
           <HairProductTable/>
+        </TabsContent>
+
+        <TabsContent value="Inventory" className="space-y-4">
+          <HairInventory/>
+        </TabsContent>
+
+        <TabsContent value="Orders" className="space-y-4">
+          <HairOrder/>
         </TabsContent>
       </Tabs>
     </div>

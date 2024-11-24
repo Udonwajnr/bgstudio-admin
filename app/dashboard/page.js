@@ -34,6 +34,12 @@ const salesData = [
   { name: 'Apr', hair: 2780, poultry: 3908 },
   { name: 'May', hair: 1890, poultry: 4800 },
   { name: 'Jun', hair: 2390, poultry: 3800 },
+  { name: 'July', hair: 2390, poultry: 3800 },
+  { name: 'Aug', hair: 2390, poultry: 3800 },
+  { name: 'Sep', hair: 2390, poultry: 3800 },
+  { name: 'Oct', hair: 2390, poultry: 3800 },
+  { name: 'Nov', hair: 2390, poultry: 3800 },
+  { name: 'Dec', hair: 2390, poultry: 3800 },
 ]
 
 const recentActivity = [
@@ -62,8 +68,8 @@ export default function Dashboard() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
+          {/* <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger> */}
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -259,9 +265,11 @@ export default function Dashboard() {
                 <Button className="w-full">
                   <Plus className="mr-2 h-4 w-4" /> Add New Poultry Product
                 </Button>
-                <Button className="w-full" variant="outline">
-                  View All Orders
-                </Button>
+                <Link href='/dashboard/orders'>
+                  <Button className="w-full" variant="outline">
+                    View All Orders
+                  </Button> 
+                </Link>
                 <Button className="w-full" variant="outline">
                   Generate Sales Report
                 </Button>
