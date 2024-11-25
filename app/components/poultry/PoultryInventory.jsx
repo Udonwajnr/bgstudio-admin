@@ -4,9 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle,CardDescription,CardFooter} fr
 
 const PoultryInventory=()=>{
     return (
-        <Card className='px-3'>
         <EggProductTable/>
-        </Card>
     )
 }
 

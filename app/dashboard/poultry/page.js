@@ -401,10 +401,6 @@ export default function EggSalesDashboard() {
                 </Card>
               </div>
         </TabsContent>
-
-        <TabsContent value="Orders" className="space-y-4">
-
-        </TabsContent>
       </Tabs>
     </div>
   )
