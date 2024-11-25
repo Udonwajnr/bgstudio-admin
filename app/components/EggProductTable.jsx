@@ -1,12 +1,12 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import {
   CaretSortIcon,
   ChevronDownIcon,
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons"
-import { Plus } from "lucide-react"
+import { Plus, Trash2, FileDown, Printer } from 'lucide-react'
 import {
   flexRender,
   getCoreRowModel,
@@ -39,8 +39,19 @@ import {
 import Link from "next/link"
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
-const data = [
+const initialData = [
   {
     id: "EGG001",
     name: "Organic Free-Range Eggs",
@@ -105,17 +116,47 @@ const columns = [
   },
   {
     accessorKey: "name",
-    header: "Product Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Product Name
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => <div className="capitalize">{row.getValue("category")}</div>,
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"))
       const formatted = new Intl.NumberFormat("en-US", {
@@ -128,14 +169,34 @@ const columns = [
   },
   {
     accessorKey: "stock",
-    header: () => <div className="text-right">Stock</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Stock
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       return <div className="text-right font-medium">{row.getValue("stock")}</div>
     },
   },
   {
     accessorKey: "sales",
-    header: () => <div className="text-right">Sales</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Sales
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       return <div className="text-right font-medium">{row.getValue("sales")}</div>
     },
@@ -166,20 +227,19 @@ const columns = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={'/dashboard/poultry/w'}>
+              <Link href={`/dashboard/poultry/${product.id}`}>
                 View product details
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={'/dashboard/poultry/w/edit'}>
+              <Link href={`/dashboard/poultry/${product.id}/edit`}>
                 Edit product 
               </Link>
             </DropdownMenuItem>
-            
             <DropdownMenuItem className="text-red-500">
-             <Link href={'/dashboard/poultry/w/delete'}>
-              Delete product
-             </Link>
+              <Link href={`/dashboard/poultry/${product.id}/delete`}>
+                Delete product
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -188,11 +248,12 @@ const columns = [
   },
 ]
 
-export default function EggProductTable() {
-  const [sorting, setSorting] = React.useState([])
-  const [columnFilters, setColumnFilters] = React.useState([])
-  const [columnVisibility, setColumnVisibility] = React.useState({})
-  const [rowSelection, setRowSelection] = React.useState({})
+export default function EnhancedEggProductTable() {
+  const [sorting, setSorting] = useState([])
+  const [columnFilters, setColumnFilters] = useState([])
+  const [columnVisibility, setColumnVisibility] = useState({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [data, setData] = useState(initialData)
 
   const table = useReactTable({
     data,
@@ -213,50 +274,90 @@ export default function EggProductTable() {
     },
   })
 
+  const deleteSelectedItems = () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows
+    const newData = data.filter(item => !selectedRows.some(row => row.original.id === item.id))
+    setData(newData)
+    setRowSelection({})
+    toast.success(`${selectedRows.length} item(s) deleted successfully.`)
+  }
+
   return (
-    <Card className='px-3'>
-      <div className="w-full">
-        <div className="flex items-center py-4">
+    <Card className="px-3">
+      <CardHeader>
+        <CardTitle>Egg Products Inventory</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Input
             placeholder="Filter products..."
             value={(table.getColumn("name")?.getFilterValue() ?? "")}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
+            className="max-w-xs"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          <Link href={"/dashboard/poultry/create"}>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add New Product
+          <div className="flex flex-wrap items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto">
+                  Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    )
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* <Button variant="outline">
+              <FileDown className="mr-2 h-4 w-4" />
+              Export
             </Button>
-        </Link>
+            <Button variant="outline">
+              <Printer className="mr-2 h-4 w-4" />
+              Print
+            </Button> */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" disabled={table.getFilteredSelectedRowModel().rows.length === 0}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Selected
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the selected products from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={deleteSelectedItems}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Link href="/dashboard/poultry/create">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add New Product
+              </Button>
+            </Link>
+          </div>
         </div>
         <div className="rounded-md border">
           <Table>
@@ -308,7 +409,7 @@ export default function EggProductTable() {
             </TableBody>
           </Table>
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -332,7 +433,8 @@ export default function EggProductTable() {
             </Button>
           </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   )
 }
+
