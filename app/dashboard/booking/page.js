@@ -22,7 +22,8 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table"
-
+import { Phone, Mail, Paperclip,Plus } from 'lucide-react'
+import Link from "next/link"
 const initialBookings = [
   {
     id: 1,
@@ -30,6 +31,8 @@ const initialBookings = [
     service: "Haircut",
     dateTime: "2023-06-15T10:00",
     status: "Pending",
+    phoneNumber: "+1(555)123-4567",
+    email: "alice@example.com",
   },
   {
     id: 2,
@@ -37,6 +40,8 @@ const initialBookings = [
     service: "Nail Manicure",
     dateTime: "2023-06-15T11:30",
     status: "Pending",
+    phoneNumber: "+1 (555) 234-5678",
+    email: "bob@example.com",
   },
   {
     id: 3,
@@ -44,6 +49,8 @@ const initialBookings = [
     service: "Hair Braiding",
     dateTime: "2023-06-15T14:00",
     status: "Completed",
+    phoneNumber: "+1 (555) 345-6789",
+    email: "carol@example.com",
   },
   {
     id: 4,
@@ -51,6 +58,8 @@ const initialBookings = [
     service: "Haircut",
     dateTime: "2023-06-16T09:30",
     status: "Pending",
+    phoneNumber: "+1 (555) 456-7890",
+    email: "david@example.com",
   },
   {
     id: 5,
@@ -58,8 +67,11 @@ const initialBookings = [
     service: "Nail Pedicure",
     dateTime: "2023-06-16T13:00",
     status: "Pending",
+    phoneNumber: "+1 (555) 567-8901",
+    email: "eva@example.com",
   },
 ]
+
 
 const getServiceIcon = (service) => {
   switch (service.toLowerCase()) {
@@ -121,11 +133,11 @@ export default function BookingTable() {
         const date = new Date(row.getValue("dateTime"))
         return (
           <div className="flex flex-col">
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-sm text-muted-foreground" suppressHydrationWarning>
               <CalendarDays className="mr-2 h-4 w-4" />
               {date.toLocaleDateString()}
             </div>
-            <div className="flex items-center text-sm text-muted-foreground mt-1">
+            <div className="flex items-center text-sm text-muted-foreground mt-1" suppressHydrationWarning>
               <Clock className="mr-2 h-4 w-4" />
               {date.toLocaleTimeString()}
             </div>
@@ -133,6 +145,26 @@ export default function BookingTable() {
         )
       },
     },
+    {
+      accessorKey: "phoneNumber",
+      header: "Phone Number",
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <Phone className="mr-2 h-4 w-4" />
+          <span>{row.getValue("phoneNumber")}</span>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <Mail className="mr-2 h-4 w-4" />
+          <span>{row.getValue("email")}</span>
+        </div>
+      ),
+    },  
     {
       accessorKey: "status",
       header: "Status",
@@ -148,7 +180,7 @@ export default function BookingTable() {
           {row.getValue("status")}
         </Badge>
       ),
-    },
+    }, 
     {
       id: "actions",
       cell: ({ row }) => {
@@ -172,7 +204,9 @@ export default function BookingTable() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleUpdate(booking.id)}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Update Booking
+                <Link href={"/dashboard/booking/test/edit"}>
+                  Update Booking
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -186,7 +220,7 @@ export default function BookingTable() {
           </DropdownMenu>
         )
       },
-    },
+    }, 
   ]
 
   const table = useReactTable({
@@ -249,74 +283,85 @@ export default function BookingTable() {
           >
             Delete Selected
           </Button>
+
+          <Link href="/dashboard/booking/create">
+            <Button>
+              <Plus/>
+              Add Booking
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
+        <div className="overflow-x-auto">
+          <div className="rounded-md border">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead className="bg-muted/50 ">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground w-full">
+                          {header.isPlaceholder
+                            ? null 
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </th>
+                      ))}
+                    </tr>
                   ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="py-3 px-4">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </thead>
+                <tbody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <tr
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className="border-b transition-colors hover:bg-muted/50 w-full data-[state=selected]:bg-muted "
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={cell.id} className="py-3 px-4">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="h-24 text-center">
+                        No results.
                       </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length} className="h-24 text-center">
-                    No results.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
+          <div className="flex items-center justify-between space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+              {table.getFilteredSelectedRowModel().rows.length} of{" "}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
+            </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
