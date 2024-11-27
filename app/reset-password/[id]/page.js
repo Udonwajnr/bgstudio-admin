@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import ResetSuccess from "@/app/components/SuccessfulResetPassword";
+// import ResetSuccess from "@/app/components/SuccessfulResetPassword";
 import { Bars } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
 

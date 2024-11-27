@@ -21,40 +21,40 @@ export default function ForgotPassword() {
     setEmail(e.target.value);
   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError(null);
+  const handleSubmit = async (e) => {
+    // e.preventDefault();
+    // setError(null);
 
-//     // Validate email format
-//     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!emailPattern.test(email)) {
-//       setError('Please enter a valid email address.');
-//       return;
-//     }
+    // // Validate email format
+    // const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailPattern.test(email)) {
+    //   setError('Please enter a valid email address.');
+    //   return;
+    // }
 
-//     setLoading(true);
+    // setLoading(true);
 
-//     try {
-//       const response = await axios.post('https://medical-api-advo.onrender.com/api/hospital/forgot-password', { email },
-//         { headers: { 'Content-Type': 'application/json' } }
-//       );
-//       setSuccess(true);
-//       console.log(response.data);
-//     } catch (error) {
-//       setError(error.response?.data?.msg || 'Failed to send reset link. Please try again.');
-//       console.error(error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+    // try {
+    //   const response = await axios.post('https://medical-api-advo.onrender.com/api/hospital/forgot-password', { email },
+    //     { headers: { 'Content-Type': 'application/json' } }
+    //   );
+    //   setSuccess(true);
+    //   console.log(response.data);
+    // } catch (error) {
+    //   setError(error.response?.data?.msg || 'Failed to send reset link. Please try again.');
+    //   console.error(error);
+    // } finally {
+    //   setLoading(false);
+    // }
+  };
 
-//   useEffect(() => {
-//     const data = localStorage.getItem("token");
-//     if (data) {
-//       // If a token is found, redirect to the dashboard
-//       router.push("/dashboard");
-//     }
-//   }, [router]);
+  useEffect(() => {
+    const data = localStorage.getItem("token");
+    if (data) {
+      // If a token is found, redirect to the dashboard
+      router.push("/dashboard");
+    }
+  }, [router]);
 
 //   if (success) return <ResetEmailSent />;
 

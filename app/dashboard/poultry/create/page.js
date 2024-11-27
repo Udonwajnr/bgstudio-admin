@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toast } from "@/components/ui/use-toast"
+// import { toast } from "@/components/ui/use-toast"
 
 export default function ProductForm() {
   const [formData, setFormData] = useState({
@@ -66,10 +66,10 @@ export default function ProductForm() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000))
       setIsSubmitting(false)
-      toast({
-        title: "Product submitted",
-        description: "The product has been successfully added.",
-      })
+      // toast({
+      //   title: "Product submitted",
+      //   description: "The product has been successfully added.",
+      // })
       console.log(formData)
       // Reset form after successful submission
       setFormData({
