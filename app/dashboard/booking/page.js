@@ -301,7 +301,7 @@ export default function BookingTable() {
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground w-full">
+                        <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground">
                           {header.isPlaceholder
                             ? null 
                             : flexRender(
