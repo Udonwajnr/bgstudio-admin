@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-export default function Layout({ children }) {
+export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const SidebarContent = () => (
