@@ -5,14 +5,14 @@ import axios from "axios";
 
 export default function VerifyEmail({ email }) {
 
-//   const resendVerificationLink = async () => {
-//     try {
-//       await axios.post("https://medical-api-advo.onrender.com/api/hospital/resend-verification", { email });
-//       console.log("Verification code has been sent again");
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   };
+  const resendVerificationLink = async () => {
+    try {
+      await axios.post("https://bgstudiobackend-1.onrender.com/api/auth/resend-verification", { email });
+      console.log("Verification code has been sent again");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-background">

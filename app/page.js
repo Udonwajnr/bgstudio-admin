@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
 import { motion } from "framer-motion"
+import axios from 'axios'
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -41,13 +42,22 @@ export default function Home() {
 
     setIsLoading(true)
     try {
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Login submitted:', formData)
-      // Here you would typically send the login data to your backend
-      // and handle the response accordingly
+      const response = await axios.post(
+        'https://bgstudiobackend-1.onrender.com/api/auth/login',
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      )
+      console.log('Login successful:', response.data)
+
+      // Example: Navigate to the dashboard or perform actions on successful login
+      alert('Login successful!')
     } catch (err) {
-      setError('Invalid email or password')
+      console.error(err)
+      setError(
+        err.response?.data?.message || 'Invalid email or password. Please try again.'
+      )
     } finally {
       setIsLoading(false)
     }
@@ -57,7 +67,7 @@ export default function Home() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-secondary/20">
       <Card className="w-full max-w-4xl shadow-xl overflow-hidden">
         <div className="md:flex">
-          <motion.div 
+          <motion.div
             className="md:w-1/2 bg-indigo-600 p-8 text-white flex flex-col justify-center items-center"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -81,7 +91,7 @@ export default function Home() {
             <CardTitle className="text-3xl font-bold text-center mb-4">Admin Dashboard</CardTitle>
             <p className="text-center text-lg">Manage your business with ease and efficiency.</p>
           </motion.div>
-          <motion.div 
+          <motion.div
             className="md:w-1/2 p-8"
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -94,24 +104,24 @@ export default function Home() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    name="email" 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    required 
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
                     value={formData.email}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input 
-                    id="password" 
-                    name="password" 
-                    type="password" 
-                    placeholder="Enter your password" 
-                    required 
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
                     value={formData.password}
                     onChange={handleChange}
                   />

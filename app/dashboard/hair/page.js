@@ -19,6 +19,7 @@ import HairProductTable from '@/app/components/HairProductTable'
 import Link from 'next/link'
 import HairInventory from '@/app/components/hair/HairInventory'
 import HairOrder from '@/app/components/hair/HairOrders'
+
 const salesDataHair = [
   { name: 'Jan', shampoo: 3000, conditioner: 1500, hairspray: 1000 },
   { name: 'Feb', shampoo: 2500, conditioner: 1200, hairspray: 800 },
@@ -29,7 +30,7 @@ const salesDataHair = [
 ]
 
 const recentActivityHair = [
-  { id: 1, action: "New order placed", product: "Shampoo", time: "5 minutes ago" },
+  { id: 1, action: "New order placed", product: "Shampoo", time: "5 minutes ag      o" },
   { id: 2, action: "Stock updated", product: "Hair Gel", time: "10 minutes ago" },
   { id: 3, action: "Order shipped", product: "Conditioner", time: "1 hour ago" },
 ]

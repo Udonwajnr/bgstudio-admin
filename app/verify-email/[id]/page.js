@@ -15,16 +15,17 @@ export default function EmailVerified() {
   
   useEffect(() => {
     if (token) {
-      axios.get(`https://medical-api-advo.onrender.com/api/hospital/verify-email/${token}`)
+      axios.get(`https://bgstudiobackend-1.onrender.com/api/auth/verify/${token}`)
         .then(() => {
           setStatus("success");
         })
         .catch((error) => {
+          console.log(error)
           if (error.response) {
             const message = error.response.data.msg;
-            if (message === "Invalid token or hospital not found") {
+            if (message === "Invalid token") {
               setStatus("invalid");
-            } else if (message === "Email already verified") {
+            } else if (message === "Email already verified") { 
               setStatus("success");
             } else {
               setStatus("error");
@@ -82,7 +83,7 @@ export default function EmailVerified() {
         </CardHeader>
         <CardContent className="space-y-4 text-center">
           {status === "success" && (
-            <Link href="/login">
+            <Link href="">
               <Button className="w-full bg-green-600 text-white">Go to Login</Button>
             </Link>
           )}

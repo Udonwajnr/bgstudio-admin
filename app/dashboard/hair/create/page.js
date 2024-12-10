@@ -165,7 +165,9 @@ export default function HairProductForm() {
               <Label htmlFor="customizable">Customizable</Label>
             </div>
           </>
-        ) : (
+        )
+         :
+          (
           <>
             <div>
               <Label htmlFor="productType">Product Type</Label>
