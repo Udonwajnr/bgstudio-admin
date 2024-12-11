@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { motion } from "framer-motion"
 import axios from 'axios'
 import VerifyEmail from '../components/VerifyEmail'
+import { Toaster, toast } from 'sonner'
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     username: '',
@@ -77,6 +79,8 @@ export default function RegisterPage() {
           password: '',
           confirmPassword: ''
         })
+        toast.success('Registration Successful:')
+
       } else {
         setError('An error occurred. Please try again.')
       }
@@ -93,34 +97,17 @@ export default function RegisterPage() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-white p-4">
       <Card className="w-full max-w-4xl shadow-xl">
         <div className="md:flex">
-          <motion.div className="md:w-1/2 bg-indigo-600 text-white p-8 flex flex-col justify-center rounded-l-lg"
+          <motion.div className="md:w-1/2 bg-black text-white p-8 flex flex-col justify-center rounded-l-lg"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
             <CardHeader className="space-y-1">
-              <div className="w-24 h-24 mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 100 100"
-                  className="w-full h-full"
-                >
-                  <circle cx="50" cy="50" r="45" fill="white" />
-                  <path
-                    d="M30 50 L45 65 L70 40"
-                    stroke="#4F46E5"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                </svg>
-              </div>
-              <CardTitle className="text-3xl font-bold text-center">Admin Dashboard</CardTitle>
+            <div className=" mb-4 ">
+              <img src={"logo2.jpg"} className="w-full max-w-[200px] rounded-full mx-auto"/>
+            </div>
+              <CardTitle className="text-3xl font-bold text-center">BG Admin Dashboard</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-lg text-center mt-4">
-                Join our team and take control of your business with our powerful admin tools.
-              </p>
-            </CardContent>
           </motion.div>
           <motion.div className="md:w-1/2 p-8"
             initial={{ x: 50, opacity: 0 }}

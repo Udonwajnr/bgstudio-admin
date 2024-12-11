@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from 'next/link'
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion"
 import axios from 'axios'
+import { Toaster, toast } from 'sonner'
+
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -17,7 +20,16 @@ export default function Home() {
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
 
+  
+  useEffect(()=>{
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      // If an access token is found, redirect to the dashboard
+      router.push('/dashboard');
+    }
+  },[])
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -49,10 +61,14 @@ export default function Home() {
           password: formData.password,
         }
       )
-      console.log('Login successful:', response.data)
+      // console.log(response.data)
+      toast.success('Login successful:')
+      localStorage.setItem('accessToken', response.data.accessToken); // Store access token under a different key
 
-      // Example: Navigate to the dashboard or perform actions on successful login
-      alert('Login successful!')
+      // Redirect to the dashboard or another page
+      router.push('/dashboard');
+
+
     } catch (err) {
       console.error(err)
       setError(
@@ -68,27 +84,15 @@ export default function Home() {
       <Card className="w-full max-w-4xl shadow-xl overflow-hidden">
         <div className="md:flex">
           <motion.div
-            className="md:w-1/2 bg-indigo-600 p-8 text-white flex flex-col justify-center items-center"
+            className="md:w-1/2 bg-black p-8 text-white flex flex-col justify-center items-center"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="w-24 h-24 mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 100 100"
-                className="w-full h-full"
-              >
-                <circle cx="50" cy="50" r="45" fill="white" />
-                <path
-                  d="M30 50 L45 65 L70 40"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="none"
-                />
-              </svg>
+            <div className=" mb-4">
+              <img src={"logo2.jpg"} className="w-full max-w-[200px] rounded-full"/>
             </div>
-            <CardTitle className="text-3xl font-bold text-center mb-4">Admin Dashboard</CardTitle>
+            <CardTitle className="text-3xl font-bold text-center mb-4"> BG Admin Dashboard</CardTitle>
             <p className="text-center text-lg">Manage your business with ease and efficiency.</p>
           </motion.div>
           <motion.div

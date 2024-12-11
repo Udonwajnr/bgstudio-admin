@@ -7,7 +7,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-// import ResetSuccess from "@/app/components/SuccessfulResetPassword";
 import { Bars } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
 
@@ -18,7 +17,8 @@ export default function ResetPassword() {
   const [error, setError] = useState(null);
   const pathname = usePathname();
   const token = pathname.split('/').pop(); // Extract the token from the URL path
-  const router=useRouter()
+  const router = useRouter();
+
   useEffect(() => {
     if (token) {
       setStatus("form"); // Display form after token is initially checked
@@ -27,49 +27,47 @@ export default function ResetPassword() {
     }
   }, [token]);
 
+  console.log(token)
   useEffect(() => {
     const data = localStorage.getItem("token");
     if (data) {
-      // If a token is found, redirect to the dashboard
       router.push("/dashboard");
     }
   }, [router]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError(null);
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
-//     if (newPassword !== confirmPassword) {
-//       setError("Passwords do not match");
-//       return;
-//     }
+    try {
+      const response = await axios.post(
+        `https://bgstudiobackend-1.onrender.com/api/auth/reset-password/${token}`,
+        { newPassword,confirmPassword },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-//     try {
-//       const response = await axios.post('https://medical-api-advo.onrender.com/api/hospital/reset-password', {
-//         token,
-//         newPassword,
-//         confirmPassword
-//       });
+      if (response.status === 200) {
+        setStatus("success");
+      }
+    } catch (error) {
+      if (error.response) {
+        const message = error.response.data.msg;
 
-//       if (response.status === 200) {
-//         setStatus("success");
-//       }
-//     } catch (error) {
-//       if (error.response) {
-//         const message = error.response.data.msg;
-
-//         if (message === "Token is invalid or has expired") {
-//           setStatus("invalid");
-//         } else {
-//           setStatus("error");
-//         }
-//       } else {
-//         setStatus("error");
-//       }
-//       console.log(error);
-//     }
-//   };
+        if (message === "Token is invalid or has expired") {
+          setStatus("invalid");
+        } else {
+          setStatus("error");
+        }
+      } else {
+        setStatus("error");
+      }
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-background">

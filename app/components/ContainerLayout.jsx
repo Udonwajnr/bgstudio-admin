@@ -1,16 +1,36 @@
 "use client"
-
 import { useState } from "react"
 import { BarChart3, ChevronDown, Cog, FileText, LayoutDashboard, Loader2, Menu, Package, ShoppingCart, X } from "lucide-react"
 import Link from "next/link"
-
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import axios from "axios"
+import { Toaster, toast } from 'sonner'
 
 export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [error,setError] = useState(false)
+  const router = useRouter()
+
+  const logout =async()=>{
+    try{
+      await axios.post("https://bgstudiobackend-1.onrender.com/api/auth/logout")
+      .then((data)=>{
+        console.log(data)
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem("_id")
+        toast.success('Logout Successful:')
+        router.push('/');
+      })
+      // alert('Logout successful')
+    }
+    catch(err){
+      setError(err)
+    }
+  }
 
   const SidebarContent = () => (
     <>
@@ -90,7 +110,11 @@ export default function ContainerLayout({ children }) {
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem>
+                <button onClick={logout}>
+                   Logout
+                </button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
