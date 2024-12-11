@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion"
 import axios from 'axios'
 import { Toaster, toast } from 'sonner'
-
+import api from './axios/axiosConfig'
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -22,6 +22,18 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
 
+  useEffect(()=>{
+    const getWelcome=async()=>{
+        await api.get("https://bgstudiobackend-1.onrender.com/")
+        .then((data)=>{
+            console.log("done")
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }     
+    
+    getWelcome() 
+    },[])
   
   useEffect(()=>{
     const accessToken = localStorage.getItem('accessToken');
@@ -54,7 +66,7 @@ export default function Home() {
 
     setIsLoading(true)
     try {
-      const response = await axios.post(
+      const response = await api.post(
         'https://bgstudiobackend-1.onrender.com/api/auth/login',
         {
           email: formData.email,
@@ -93,7 +105,7 @@ export default function Home() {
               <img src={"logo2.jpg"} className="w-full max-w-[200px] rounded-full"/>
             </div>
             <CardTitle className="text-3xl font-bold text-center mb-4"> BG Admin Dashboard</CardTitle>
-            <p className="text-center text-lg">Manage your business with ease and efficiency.</p>
+            {/* <p className="text-center text-lg">Manage your business with ease and efficiency.</p> */}
           </motion.div>
           <motion.div
             className="md:w-1/2 p-8"

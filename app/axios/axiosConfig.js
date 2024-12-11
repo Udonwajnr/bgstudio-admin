@@ -38,7 +38,7 @@ api.interceptors.response.use(
                 console.error('Refresh token failed:', refreshError);
                 localStorage.removeItem('_id'); // Remove only the access token
                 localStorage.removeItem('accessToken'); // Remove only the access token
-                window.location.href = '/login';
+                window.location.href = '/';
             }
         }
 
