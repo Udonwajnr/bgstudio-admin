@@ -30,7 +30,7 @@ api.interceptors.response.use(
           {},
           { withCredentials: true }
         );
-        console.log(data)
+        console.log("it has done my gee")
         const newAccessToken = data.accessToken;
         localStorage.setItem("accessToken", newAccessToken); // Save the new token
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
