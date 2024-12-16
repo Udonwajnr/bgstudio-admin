@@ -12,6 +12,7 @@ import { motion } from "framer-motion"
 import axios from 'axios'
 import { Toaster, toast } from 'sonner'
 import api from './axios/axiosConfig'
+import { useAuth } from './auth/auth-context'
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export default function Home() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
+  const { login } = useAuth();
 
   useEffect(()=>{
     const getWelcome=async()=>{
@@ -66,19 +68,26 @@ export default function Home() {
 
     setIsLoading(true)
     try {
-      const response = await api.post(
-        'https://bgstudiobackend-1.onrender.com/api/auth/login',
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      )
+
+      await login(formData.email, formData.password);
+
+      // console.log(response)
+
+      // if(response.status === 200){
+      //   toast.success('Login successful:')
+      //   localStorage.setItem('accessToken', response.data.accessToken); // Store access token under a different key
+      //   setFormData({
+      //   email:"",
+      //   password:""
+     
+      //  })
+      //  router.push('/dashboard');
+      // }
+      
       // console.log(response.data)
-      toast.success('Login successful:')
-      localStorage.setItem('accessToken', response.data.accessToken); // Store access token under a different key
 
       // Redirect to the dashboard or another page
-      router.push('/dashboard');
+      
 
 
     } catch (err) {

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function BookingForm() {
   const [booking, setBooking] = useState({
@@ -19,7 +21,7 @@ export default function BookingForm() {
   const [loading, setLoading] = useState(false); // Loading state
   const [successMessage, setSuccessMessage] = useState(null); // Success message
   const [errorMessage, setErrorMessage] = useState(null); // Error message
-
+  const router = useRouter()
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBooking((prev) => ({ ...prev, [name]: value }));
@@ -42,13 +44,8 @@ export default function BookingForm() {
         },
       })
       .then((data)=>{
-         console.log(data) 
-      })
-      
-      ;
-
-      if (response.status === 201) {
         setSuccessMessage('Booking created successfully!');
+        toast.success("Booking created successfully!")
         setBooking({
           id: Date.now(),
           clientName: '',
@@ -58,7 +55,8 @@ export default function BookingForm() {
           phoneNumber: '',
           email: '',
         });
-      }
+        router.push("/dashboard/booking") 
+      })
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || 'An error occurred while creating the booking.'

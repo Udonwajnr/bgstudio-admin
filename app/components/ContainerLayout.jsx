@@ -111,7 +111,7 @@ export default function ContainerLayout({ children }) {
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>
-                <button onClick={logout}>
+                <button onClick={logout} className=" w-full text-left">
                    Logout
                 </button>
               </DropdownMenuItem>

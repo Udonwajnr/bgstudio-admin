@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CalendarDays, Clock, Pencil, Trash2, CheckCircle, Scissors, Brush, Fingerprint, ChevronDown, Search } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,56 +22,9 @@ import {
   getPaginationRowModel,
   getFilteredRowModel,
 } from "@tanstack/react-table"
-import { Phone, Mail, Paperclip,Plus } from 'lucide-react'
+import { Phone, Mail, Paperclip, Plus } from 'lucide-react'
 import Link from "next/link"
-const initialBookings = [
-  {
-    id: 1,
-    clientName: "Alice Johnson",
-    service: "Haircut",
-    dateTime: "2023-06-15T10:00",
-    status: "Pending",
-    phoneNumber: "+1(555)123-4567",
-    email: "alice@example.com",
-  },
-  {
-    id: 2,
-    clientName: "Bob Smith",
-    service: "Nail Manicure",
-    dateTime: "2023-06-15T11:30",
-    status: "Pending",
-    phoneNumber: "+1 (555) 234-5678",
-    email: "bob@example.com",
-  },
-  {
-    id: 3,
-    clientName: "Carol Williams",
-    service: "Hair Braiding",
-    dateTime: "2023-06-15T14:00",
-    status: "Completed",
-    phoneNumber: "+1 (555) 345-6789",
-    email: "carol@example.com",
-  },
-  {
-    id: 4,
-    clientName: "David Brown",
-    service: "Haircut",
-    dateTime: "2023-06-16T09:30",
-    status: "Pending",
-    phoneNumber: "+1 (555) 456-7890",
-    email: "david@example.com",
-  },
-  {
-    id: 5,
-    clientName: "Eva Davis",
-    service: "Nail Pedicure",
-    dateTime: "2023-06-16T13:00",
-    status: "Pending",
-    phoneNumber: "+1 (555) 567-8901",
-    email: "eva@example.com",
-  },
-]
-
+import api from "@/app/axios/axiosConfig"
 
 const getServiceIcon = (service) => {
   switch (service.toLowerCase()) {
@@ -87,10 +40,26 @@ const getServiceIcon = (service) => {
 }
 
 export default function BookingTable() {
-  const [bookings, setBookings] = useState(initialBookings)
+  const [bookings, setBookings] = useState([])
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState('')
 
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await api.get('https://bgstudiobackend-1.onrender.com/api/salon')
+        .then((response)=>{
+          setBookings(response.data)          
+        })
+      } catch (error) {
+        console.error('Error fetching bookings:', error)
+      }
+    }
+
+    fetchBookings()
+  }, [])
+
+  
   const columns = [
     {
       id: "select",
@@ -196,7 +165,7 @@ export default function BookingTable() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => handleComplete(booking.id)}
+                onClick={() => handleComplete(booking._id)}
                 disabled={booking.status === "Completed"}
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
@@ -228,7 +197,7 @@ export default function BookingTable() {
     columns,
     state: {
       rowSelection,
-      globalFilter,
+        globalFilter,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -239,16 +208,17 @@ export default function BookingTable() {
     globalFilterFn: "includesString",
   })
 
-  const handleComplete = (id) => {
+  const handleComplete = async(id) => {
+
     setBookings(
       bookings.map((booking) =>
-        booking.id === id ? { ...booking, status: "Completed" } : booking
+        booking._id === id ? { ...booking, status: "Completed" } : booking
       )
     )
   }
 
   const handleDelete = (id) => {
-    setBookings(bookings.filter((booking) => booking.id !== id))
+    setBookings(bookings.filter((booking) => booking._id !== id))
   }
 
   const handleUpdate = (id) => {
@@ -368,3 +338,4 @@ export default function BookingTable() {
     </Card>
   )
 }
+
