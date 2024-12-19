@@ -31,6 +31,7 @@ export default function Home() {
             console.log("done")
         }).catch((err)=>{
             console.log(err)
+            
         })
     }     
     

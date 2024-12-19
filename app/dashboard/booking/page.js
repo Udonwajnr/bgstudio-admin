@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { CalendarDays, Clock, Pencil, Trash2, CheckCircle, Scissors, Brush, Fingerprint, ChevronDown, Search } from 'lucide-react'
+import { CalendarDays, Clock, Pencil, Trash2, CheckCircle, Scissors, Brush, Fingerprint, ChevronDown, Search,ShoppingCart } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -208,14 +208,24 @@ export default function BookingTable() {
     globalFilterFn: "includesString",
   })
 
-  const handleComplete = async(id) => {
-
-    setBookings(
-      bookings.map((booking) =>
-        booking._id === id ? { ...booking, status: "Completed" } : booking
-      )
-    )
-  }
+  const handleComplete = async (id) => {
+    try {
+      // Send API request to update the status
+      await api.patch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}/status`, {
+        status: "Completed",
+      });
+  
+      // Update the local state only after the API request succeeds
+      setBookings(
+        bookings.map((booking) =>
+          booking._id === id ? { ...booking, status: "Completed" } : booking
+        )
+      );
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+    }
+  };
+  
 
   const handleDelete = (id) => {
     setBookings(bookings.filter((booking) => booking._id !== id))
@@ -232,110 +242,114 @@ export default function BookingTable() {
   }
 
   return (
-    <Card className="w-full shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Latest Booked Sessions</CardTitle>
-        <div className="flex items-center space-x-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search bookings..."
-              value={globalFilter ?? ""}
-              onChange={(event) => setGlobalFilter(event.target.value)}
-              className="pl-8"
-            />
-          </div>
-          <Button
-            onClick={handleDeleteSelected}
-            disabled={Object.keys(rowSelection).length === 0}
-            variant="destructive"
-            size="sm"
-          >
-            Delete Selected
-          </Button>
-
-          <Link href="/dashboard/booking/create">
-            <Button>
-              <Plus/>
-              Add Booking
+    <div className="relative">
+      <Card className="shadow-lg">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Latest Booked Sessions</CardTitle>
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search bookings..."
+                value={globalFilter ?? ""}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <Button
+              onClick={handleDeleteSelected}
+              disabled={Object.keys(rowSelection).length === 0}
+              variant="destructive"
+              size="sm"
+            >
+              Delete Selected
             </Button>
-          </Link>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <div className="rounded-md border">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead className="bg-muted/50 ">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground">
-                          {header.isPlaceholder
-                            ? null 
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <tr
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="border-b transition-colors hover:bg-muted/50 w-full data-[state=selected]:bg-muted "
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} className="py-3 px-4">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
+
+            <Link href="/dashboard/booking/create">
+              <Button>
+                <Plus/>
+                Add Booking
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent >
+          <div className="overflow-x-auto">
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="bg-muted/50 ">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <th key={header.id} className="py-3 px-4 text-left font-medium text-muted-foreground">
+                            {header.isPlaceholder
+                              ? null 
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </th>
                         ))}
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={columns.length} className="h-24 text-center">
-                        No results.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <tr
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                          className="border-b transition-colors hover:bg-muted/50 w-full data-[state=selected]:bg-muted "
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <td key={cell.id} className="py-3 px-4">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={columns.length} className="h-24 text-center">
+                          No results.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="flex items-center justify-between space-x-2 py-4">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="flex items-center justify-between space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    
+    
+    </div>
   )
 }
 

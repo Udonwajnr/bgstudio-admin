@@ -9,11 +9,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import axios from "axios"
 import { Toaster, toast } from 'sonner'
+import { useAuth } from "../auth/auth-context";
+import WaitingForRole from "./WaitingForRole";
 
 export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [error,setError] = useState(false)
   const router = useRouter()
+  const {user, isAuthenticated} = useAuth()
 
   const logout =async()=>{
     try{
@@ -31,6 +34,11 @@ export default function ContainerLayout({ children }) {
       setError(err)
     }
   }
+
+
+  // if (!isAuthenticated || user?.role !== "custome") {
+  //   return <div><WaitingForRole/></div>; // Show a loader or message while redirecting
+  // }
 
   const SidebarContent = () => (
     <>
@@ -121,7 +129,9 @@ export default function ContainerLayout({ children }) {
 
         {/* Dashboard Content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900 p-4">
-          {children}
+          <div className="container mx-auto">
+            {children}
+          </div> 
         </main>
       </div>
     </div>
