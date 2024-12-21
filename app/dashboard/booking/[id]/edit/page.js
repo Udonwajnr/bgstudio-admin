@@ -1,61 +1,98 @@
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+"use client";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function BookingEditPage() {
-  const [booking, setBooking] = useState({
-    id: '',
-    clientName: '',
-    service: '',
-    dateTime: '',
-    status: '',
-    phoneNumber: '',
-    email: '',
-  });
+export default function BookingEditPage({ params }) {
+  const { id } = params; // Get the ID from route params
+  const router = useRouter();
+
+  const [booking, setBooking] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [savedBooking, setSavedBooking] = useState(null);
 
   useEffect(() => {
-    // Simulating fetching existing booking data
-    // In a real application, you would fetch this from your backend
-    const existingBooking = {
-      id: 1,
-      clientName: "Alice Johnson",
-      service: "Haircut",
-      dateTime: "2023-06-15T10:00",
-      status: "Pending",
-      phoneNumber: "+1(555)123-4567",
-      email: "alice@example.com",
+    // Fetch booking details by ID
+    const fetchBooking = async () => {
+      try {
+        const response = await fetch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`);
+        if (!response.ok) {
+          throw new Error("Booking not found");
+        }
+        const data = await response.json();
+        setBooking(data);
+      } catch (error) {
+        console.error("Error fetching booking:", error);
+        setNotFound(true);
+      }
     };
-    setBooking(existingBooking);
-  }, []);
+
+    fetchBooking();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBooking(prev => ({ ...prev, [name]: value }));
+    setBooking((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleServiceChange = (value) => {
-    setBooking(prev => ({ ...prev, service: value }));
+    setBooking((prev) => ({ ...prev, service: value }));
   };
 
   const handleStatusChange = (value) => {
-    setBooking(prev => ({ ...prev, status: value }));
+    setBooking((prev) => ({ ...prev, status: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Updated booking:', booking);
-    // Here you would typically send the updated data to your backend
-    setSavedBooking(booking);
+    try {
+      const response = await fetch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(booking),
+      });
+
+      if (response.ok) {
+        const updatedBooking = await response.json();
+        setSavedBooking(updatedBooking);
+        alert("Booking updated successfully!");
+      } else {
+        alert("Failed to update booking");
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error);
+    }
   };
+
+  if (notFound) {
+    return (
+      <div className="text-center mt-20">
+        <h1 className="text-4xl font-bold">404 - Booking Not Found</h1>
+        <p className="mt-4">The booking you are trying to edit does not exist.</p>
+        <Button onClick={() => router.push("/dashboard/booking")} className="mt-6">
+          Go Back
+        </Button>
+      </div>
+    );
+  }
+
+  if (!booking) {
+    return (
+      <div className="text-center mt-20">
+        <h1 className="text-2xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div  className="space-y-4 w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Edit Booking</h1>
+      <div className="space-y-4 w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">Edit Booking</h1>
         <div>
           <Label htmlFor="clientName">Client Name</Label>
           <Input
@@ -87,7 +124,7 @@ export default function BookingEditPage() {
             id="dateTime"
             name="dateTime"
             type="datetime-local"
-            value={booking.dateTime}
+            value={new Date(booking.dateTime).toISOString().slice(0, 16)}
             onChange={handleChange}
             required
           />
@@ -101,7 +138,7 @@ export default function BookingEditPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Confirmed">Confirmed</SelectItem>
+              <SelectItem value="Completed">Completed</SelectItem>
               <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
@@ -131,7 +168,9 @@ export default function BookingEditPage() {
           />
         </div>
 
-        <Button onSubmit={handleSubmit} className="w-full">Save Changes</Button>
+        <Button onClick={handleSubmit} className="w-full">
+          Save Changes
+        </Button>
       </div>
 
       {savedBooking && (
@@ -143,4 +182,3 @@ export default function BookingEditPage() {
     </div>
   );
 }
-

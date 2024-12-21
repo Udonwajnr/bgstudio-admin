@@ -25,6 +25,7 @@ import {
 import { Phone, Mail, Paperclip, Plus } from 'lucide-react'
 import Link from "next/link"
 import api from "@/app/axios/axiosConfig"
+import { toast } from "sonner"
 
 const getServiceIcon = (service) => {
   switch (service.toLowerCase()) {
@@ -173,7 +174,7 @@ export default function BookingTable() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleUpdate(booking.id)}>
                 <Pencil className="mr-2 h-4 w-4" />
-                <Link href={"/dashboard/booking/test/edit"}>
+                <Link href={`/dashboard/booking/${booking._id}/edit`}>
                   Update Booking
                 </Link>
               </DropdownMenuItem>
@@ -215,6 +216,7 @@ export default function BookingTable() {
         status: "Completed",
       });
   
+      toast.success("Booking status updated")
       // Update the local state only after the API request succeeds
       setBookings(
         bookings.map((booking) =>
@@ -225,7 +227,6 @@ export default function BookingTable() {
       console.error("Error updating booking status:", error);
     }
   };
-  
 
   const handleDelete = (id) => {
     setBookings(bookings.filter((booking) => booking._id !== id))
@@ -235,11 +236,37 @@ export default function BookingTable() {
     console.log(`Update booking ${id}`)
   }
 
-  const handleDeleteSelected = () => {
-    const selectedIds = Object.keys(rowSelection).map(Number)
-    setBookings(bookings.filter((booking) => !selectedIds.includes(booking.id)))
-    setRowSelection({})
-  }
+  const handleDeleteSelected = async () => {
+    // Map rowSelection keys (indices) to booking _id values
+    const selectedIds = Object.keys(rowSelection).map((index) => bookings[Number(index)]._id);
+  
+    if (selectedIds.length === 0) {
+      return; // No IDs selected 
+    }
+
+    console.log(selectedIds)
+  
+    try {
+      // API call to delete selected bookings
+      const response = await api.post('https://bgstudiobackend-1.onrender.com/api/salon/delete-multiple-bookings', {
+        ids: selectedIds,
+      });
+  
+      if (response.status === 200) {
+        // Update state by filtering out deleted bookings
+        setBookings(bookings.filter((booking) => !selectedIds.includes(booking._id)));
+        setRowSelection({});
+        console.log(response)
+        toast.success(response.data.message)
+      } else {
+        console.error('Error deleting bookings:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting bookings:', error);
+    }
+  };
+  
+  
 
   return (
     <div className="relative">
@@ -264,6 +291,7 @@ export default function BookingTable() {
             >
               Delete Selected
             </Button>
+
 
             <Link href="/dashboard/booking/create">
               <Button>
@@ -347,8 +375,6 @@ export default function BookingTable() {
           </div>
         </CardContent>
       </Card>
-    
-    
     </div>
   )
 }
