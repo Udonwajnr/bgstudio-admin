@@ -180,11 +180,13 @@ export default function BookingTable() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => handleDelete(booking.id)}
+                onClick={() => handleDelete(booking._id)}
                 className="text-red-600"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Booking
+                <Link href={`/dashboard/booking/${booking._id}/delete`}>
+                   Delete Booking
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

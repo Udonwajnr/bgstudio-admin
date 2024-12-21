@@ -1,4 +1,5 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { CalendarIcon, ClockIcon, PhoneIcon, MailIcon, UserIcon, ScissorsIcon, CheckCircleIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,25 +7,44 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from 'next/link'
-// In a real application, you would fetch this data from your backend
-const bookingData = {
-  id: 1,
-  clientName: "Alice Johnson",
-  service: "Haircut",
-  dateTime: "2023-06-15T10:00",
-  status: "Complete",
-  phoneNumber: "+1(555)123-4567",
-  email: "alice@example.com",
-  stylist: "Emma Smith",
-  duration: 60,
-  price: 50,
-}
+import api from '@/app/axios/axiosConfig'
+import { useRouter,useParams } from 'next/navigation'
 
 export default function BookingDetailPage() {
+  const [bookingData, setBookingData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const {id} = useParams()
+
+  console.log(id)
   const statusColor = {
     Pending: "bg-yellow-100 text-yellow-800",
     Complete: "bg-green-100 text-green-800",
     Cancelled: "bg-red-100 text-red-800",
+  }
+
+  useEffect(() => {
+    // Fetch the booking data from the API
+    const fetchBookingData = async () => {
+      try {
+        const response = await api.get(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`)
+        // const data = await response.json()
+        setBookingData(response.data)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching booking data:', error)
+        setLoading(false)
+      }
+    }
+
+    fetchBookingData()
+  }, [id])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (!bookingData) {
+    return <div>Booking not found</div>
   }
 
   return (
@@ -36,7 +56,7 @@ export default function BookingDetailPage() {
               <CardTitle className="text-2xl font-bold text-gray-900">Booking Details</CardTitle>
               <Badge className={statusColor[bookingData.status]}>{bookingData.status}</Badge>
             </div>
-            <CardDescription>Booking ID: #{bookingData.id}</CardDescription>
+            <CardDescription>Booking ID: #{id}</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -51,53 +71,51 @@ export default function BookingDetailPage() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <CalendarIcon className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">{format(new Date(bookingData.dateTime), 'MMMM d, yyyy')}</span>
+                  <span className="text-gray-700">{format(new Date(bookingData?.dateTime), 'MMMM d, yyyy')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <ClockIcon className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">{format(new Date(bookingData.dateTime), 'h:mm a')}</span>
+                  <span className="text-gray-700">{format(new Date(bookingData?.dateTime), 'h:mm a')}</span>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <PhoneIcon className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">{bookingData.phoneNumber}</span>
+                  <span className="text-gray-700">{bookingData?.phoneNumber}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MailIcon className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">{bookingData.email}</span>
+                  <span className="text-gray-700">{bookingData?.email || 'Not provided'}</span>
                 </div>
-                <div className="flex items-center space-x-3">
+                {/* <div className="flex items-center space-x-3">
                   <CheckCircleIcon className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">Duration: {bookingData.duration} minutes</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl font-semibold text-primary">${bookingData.price}</span>
-                </div>
+                  <span className="text-gray-700">Duration: {bookingData?.duration} minutes</span>
+                </div> */}
+                {/* <div className="flex items-center space-x-3">
+                  <span className="text-2xl font-semibold text-primary">${bookingData?.price}</span>
+                </div> */}
               </div>
             </div>
           </CardContent>
-          <CardFooter className="bg-gray-50 rounded-b-lg">
+          {/* <CardFooter className="bg-gray-50 rounded-b-lg">
             <div className="flex items-center space-x-4">
               <Avatar>
-                <AvatarImage src="/placeholder.svg?height=40&width=40" alt={bookingData.stylist} />
-                <AvatarFallback>{bookingData.stylist.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                <AvatarImage src="/placeholder.svg?height=40&width=40" alt={bookingData?.stylist} />
+                <AvatarFallback>{bookingData?.stylist?.split(' ')?.map(n => n[0])?.join('')}</AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium text-gray-900">{bookingData.stylist}</p>
+                <p className="text-sm font-medium text-gray-900">{bookingData?.stylist}</p>
                 <p className="text-sm text-gray-500">Your Stylist</p>
               </div>
             </div>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
         <div className="mt-6 flex justify-end space-x-4">
-            <Link href={"/dashboard/booking/test/edit"}>
+            <Link href={`/dashboard/booking/${id}/edit`}>
                 <Button variant="outline">Edit Booking</Button>
             </Link>
-          {/* <Button>Reschedule</Button> */}
         </div>
       </div>
     </div>
   )
 }
-
