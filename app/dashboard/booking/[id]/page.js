@@ -56,7 +56,7 @@ export default function BookingDetailPage() {
               <CardTitle className="text-2xl font-bold text-gray-900">Booking Details</CardTitle>
               <Badge className={statusColor[bookingData.status]}>{bookingData.status}</Badge>
             </div>
-            <CardDescription>Booking ID: #{id}</CardDescription>
+            <CardDescription>Booking Code: {bookingData.uniqueCode}</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

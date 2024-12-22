@@ -7,7 +7,6 @@ export default function Layout({children}){
         <>
             <ContainerLayout>
             {children}
-            <Toaster  richColors/>
             </ContainerLayout>
         </>
     )

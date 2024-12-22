@@ -140,15 +140,24 @@ export default function BookingTable() {
       header: "Status",
       cell: ({ row }) => (
         <Badge
-          variant={row.getValue("status") === "Completed" ? "default" : "secondary"}
-          className={
-            row.getValue("status") === "Completed"
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }
-        >
-          {row.getValue("status")}
-        </Badge>
+        variant={
+          row.getValue("status") === "Completed"
+            ? "default"
+            : row.getValue("status") === "Cancelled"
+            ? "destructive"
+            : "secondary"
+        }
+        className={
+          row.getValue("status") === "Completed"
+            ? "bg-green-100 text-green-800"
+            : row.getValue("status") === "Cancelled"
+            ? "bg-red-100 text-red-800"
+            : "bg-yellow-100 text-yellow-800"
+        }
+      >
+        {row.getValue("status")}
+      </Badge>
+      
       ),
     }, 
     {
@@ -165,6 +174,12 @@ export default function BookingTable() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <Pencil className="mr-2 h-4 w-4" />
+                <Link href={`/dashboard/booking/${booking._id}`}>
+                  View Booking
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleComplete(booking._id)}
                 disabled={booking.status === "Completed"}
@@ -172,7 +187,16 @@ export default function BookingTable() {
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Mark as Completed
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleUpdate(booking.id)}>
+
+              <DropdownMenuItem
+                onClick={() => handleCancelled(booking._id)}
+                disabled={booking.status === "Cancelled"}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Mark as Cancelled
+              </DropdownMenuItem>
+
+              <DropdownMenuItem>
                 <Pencil className="mr-2 h-4 w-4" />
                 <Link href={`/dashboard/booking/${booking._id}/edit`}>
                   Update Booking
@@ -230,6 +254,27 @@ export default function BookingTable() {
     }
   };
 
+  const handleCancelled = async (id) => {
+    try {
+      // Send API request to update the status
+      await api.patch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}/status`, {
+        status: "Cancelled",
+      });
+  
+      // Update the local state only after the API request succeeds
+      setBookings(
+        bookings.map((booking) =>
+          booking._id === id ? { ...booking, status: "Cancelled" } : booking
+        )
+      )
+      toast.success("Booking status updated")
+      
+      ;
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+    }
+  };
+
   const handleDelete = (id) => {
     setBookings(bookings.filter((booking) => booking._id !== id))
   }
@@ -258,7 +303,6 @@ export default function BookingTable() {
         // Update state by filtering out deleted bookings
         setBookings(bookings.filter((booking) => !selectedIds.includes(booking._id)));
         setRowSelection({});
-        console.log(response)
         toast.success(response.data.message)
       } else {
         console.error('Error deleting bookings:', response.data.message);
@@ -268,8 +312,6 @@ export default function BookingTable() {
     }
   };
   
-  
-
   return (
     <div className="relative">
       <Card className="shadow-lg">
@@ -293,8 +335,6 @@ export default function BookingTable() {
             >
               Delete Selected
             </Button>
-
-
             <Link href="/dashboard/booking/create">
               <Button>
                 <Plus/>

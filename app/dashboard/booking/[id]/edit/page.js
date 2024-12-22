@@ -4,7 +4,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import api from "@/app/axios/axiosConfig";
+import { toast } from "sonner";
 
 export default function BookingEditPage({ params }) {
   const { id } = params; // Get the ID from route params
@@ -13,17 +21,15 @@ export default function BookingEditPage({ params }) {
   const [booking, setBooking] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [savedBooking, setSavedBooking] = useState(null);
-
+  const [error,setError] = useState(null)
   useEffect(() => {
     // Fetch booking details by ID
     const fetchBooking = async () => {
       try {
-        const response = await fetch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`);
-        if (!response.ok) {
-          throw new Error("Booking not found");
-        }
-        const data = await response.json();
-        setBooking(data);
+        const response = await api.get(
+          `https://bgstudiobackend-1.onrender.com/api/salon/${id}`
+        );
+        setBooking(response.data);
       } catch (error) {
         console.error("Error fetching booking:", error);
         setNotFound(true);
@@ -49,23 +55,16 @@ export default function BookingEditPage({ params }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(booking),
-      });
-
-      if (response.ok) {
-        const updatedBooking = await response.json();
-        setSavedBooking(updatedBooking);
-        alert("Booking updated successfully!");
-      } else {
-        alert("Failed to update booking");
-      }
+      const response = await api.put(
+        `https://bgstudiobackend-1.onrender.com/api/salon/${id}`,
+        booking
+      );
+      setSavedBooking(response.data);
+      toast.success("Booking updated successfully!");
     } catch (error) {
       console.error("Error updating booking:", error);
+      setError(error.response.data.message)
+      toast.error(error.response.data.message)
     }
   };
 
@@ -98,7 +97,7 @@ export default function BookingEditPage({ params }) {
           <Input
             id="clientName"
             name="clientName"
-            value={booking.clientName}
+            value={booking.clientName || ""}
             onChange={handleChange}
             required
           />
@@ -106,7 +105,7 @@ export default function BookingEditPage({ params }) {
 
         <div>
           <Label htmlFor="service">Service</Label>
-          <Select onValueChange={handleServiceChange} value={booking.service}>
+          <Select onValueChange={handleServiceChange} value={booking.service || ""}>
             <SelectTrigger>
               <SelectValue placeholder="Select a service" />
             </SelectTrigger>
@@ -124,7 +123,11 @@ export default function BookingEditPage({ params }) {
             id="dateTime"
             name="dateTime"
             type="datetime-local"
-            value={new Date(booking.dateTime).toISOString().slice(0, 16)}
+            value={
+              booking.dateTime
+                ? new Date(booking.dateTime).toISOString().slice(0, 16)
+                : ""
+            }
             onChange={handleChange}
             required
           />
@@ -132,7 +135,7 @@ export default function BookingEditPage({ params }) {
 
         <div>
           <Label htmlFor="status">Status</Label>
-          <Select onValueChange={handleStatusChange} value={booking.status}>
+          <Select onValueChange={handleStatusChange} value={booking.status || ""}>
             <SelectTrigger>
               <SelectValue placeholder="Select a status" />
             </SelectTrigger>
@@ -150,7 +153,7 @@ export default function BookingEditPage({ params }) {
             id="phoneNumber"
             name="phoneNumber"
             type="tel"
-            value={booking.phoneNumber}
+            value={booking.phoneNumber || ""}
             onChange={handleChange}
             required
           />
@@ -162,7 +165,7 @@ export default function BookingEditPage({ params }) {
             id="email"
             name="email"
             type="email"
-            value={booking.email}
+            value={booking.email || ""}
             onChange={handleChange}
             required
           />
@@ -172,13 +175,6 @@ export default function BookingEditPage({ params }) {
           Save Changes
         </Button>
       </div>
-
-      {savedBooking && (
-        <div className="mt-6 p-4 bg-green-100 border border-green-400 rounded max-w-md mx-auto">
-          <h2 className="text-lg font-semibold mb-2">Booking Updated Successfully:</h2>
-          <pre className="whitespace-pre-wrap">{JSON.stringify(savedBooking, null, 2)}</pre>
-        </div>
-      )}
     </div>
   );
 }
