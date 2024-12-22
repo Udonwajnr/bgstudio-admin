@@ -22,15 +22,13 @@ export default function DeleteConfirmation({ params }) {
         const response = await api.get(`https://bgstudiobackend-1.onrender.com/api/salon/${id}`);
         if (response.status === 200) {
           setItem(response.data); // Set the item for display
-        console.log(response)
+        //  console.log(response)
         }
-
       } catch (err) {
-        console.error("Error fetching booking:", err);
+        // console.error("Error fetching booking:", err);
         setNotFound(true); // Set 404 state if not found
       }
     };
-
     fetchBooking();
   }, [id]);
 
@@ -46,10 +44,10 @@ export default function DeleteConfirmation({ params }) {
         router.push("/dashboard/booking"); // Redirect to bookings page
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete item");
+        // throw new Error(errorData.message || "Failed to delete item");
       }
     } catch (err) {
-      console.error("Error deleting item:", err);
+      // console.error("Error deleting item:", err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -75,7 +73,7 @@ export default function DeleteConfirmation({ params }) {
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
         <h1 className="mb-4 text-2xl font-bold text-gray-900">Confirm Deletion</h1>
         <p className="mb-6 text-gray-700">
-          Are you sure you want to delete this {}? This action cannot be undone.
+          Are you sure you want to delete this {item?.clientName} Booking ? This action cannot be undone.
         </p>
         {error && <p className="mb-4 text-sm text-red-500">Error: {error}</p>}
         <div className="flex justify-end space-x-4">
