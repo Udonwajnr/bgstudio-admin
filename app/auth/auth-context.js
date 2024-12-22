@@ -88,12 +88,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await api.post("https://bgstudiobackend-1.onrender.com/api/auth/login", { email, password });
-
-      
       localStorage.setItem("accessToken", data.accessToken);
       setIsAuthenticated(true);
-      
-      console.log(document.cookie);
       router.push('/dashboard');
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
@@ -113,8 +109,6 @@ export const AuthProvider = ({ children }) => {
       console.error("Logout failed:", error.response?.data || error.message);
     }
   };
-
-  console.log(user)
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout, api }}>
       {children}

@@ -37,6 +37,7 @@
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
+    "react-initials-avatar": "^1.1.2",
     "react-loader-spinner": "^6.1.6",
     "recharts": "^2.13.0",
     "sonner": "^1.7.0",

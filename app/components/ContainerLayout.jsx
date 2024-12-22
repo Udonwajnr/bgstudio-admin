@@ -11,12 +11,14 @@ import axios from "axios"
 import { Toaster, toast } from 'sonner'
 import { useAuth } from "../auth/auth-context";
 import WaitingForRole from "./WaitingForRole";
+import InitialsAvatar from 'react-initials-avatar';
 
 export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [error,setError] = useState(false)
   const router = useRouter()
   const {user, isAuthenticated} = useAuth()
+
 
   const logout =async()=>{
     try{
@@ -106,12 +108,15 @@ export default function ContainerLayout({ children }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center">
-                <img
+                {/* <img
                   src="/placeholder.svg?height=32&width=32"
                   alt="User avatar"
                   className="w-8 h-8 rounded-full mr-2"
-                />
-                <span className="hidden sm:inline-block">John Doe</span>
+                /> */}
+                <span className="hidden sm:inline-block capitalize text-lg font-medium">
+                   {/* <InitialsAvatar name="John Doe" /> */}
+                  {user?.username}
+                </span>
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
