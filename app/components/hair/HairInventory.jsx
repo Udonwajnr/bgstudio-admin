@@ -135,7 +135,7 @@ const HairInventory = () => {
               <TableRow key={item.id}>
                 <TableCell>
                   <Image
-                    src={item.image}
+                    src={item.photo[0]}
                     alt={item.name}
                     width={50}
                     height={50}
