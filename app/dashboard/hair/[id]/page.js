@@ -1,288 +1,240 @@
-// create a deatil page with the following field for a hair product yusing the following field
-// <div className='flex-1 p-8 pt-6'>
-// <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6 space-y-8">
-//   <h2 className="text-2xl font-bold mb-6 text-center">
-//     {category === 'wig' ? 'Wig' : 'Hair Product'} Details
-//   </h2>
-//   <div>
-//     <Label htmlFor="category">Category</Label>
-//     <Select onValueChange={setCategory} defaultValue={category}>
-//       <SelectTrigger>
-//         <SelectValue placeholder="Select a category" />
-//       </SelectTrigger>
-//       <SelectContent>
-//         <SelectItem value="wig">Wig</SelectItem>
-//         <SelectItem value="hairProduct">Hair Product</SelectItem>
-//       </SelectContent>
-//     </Select>
-//   </div>
+'use client'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { CheckCircle, XCircle } from 'lucide-react'
 
-//   <div>
-//     <Label htmlFor="name">Name of the {category === 'wig' ? 'Wig' : 'Product'}</Label>
-//     <Input id="name" placeholder={category === 'wig' ? "Silky Straight Bob Wig" : "Argan Oil Hair Serum"} />
-//   </div>
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { useRouter,useParams } from 'next/navigation'
+// This would typically come from your API or database
+export default function getProduct() {
+  // Fetch product data here
+  // For now, we'll return a mock product
+  return {
+    id,
+    category: 'wig',
+    name: 'Luxurious Lace Front Wig',
+    description: 'A beautiful, natural-looking lace front wig made with 100% human hair.',
+    price: 299.99,
+    quantity: 50,
+    stock: 45,
+    brand: 'GlamourLocks',
+    careInstructions: 'Gently wash with sulfate-free shampoo. Air dry or use low heat.',
+    tags: ['human hair', 'lace front', 'long'],
+    discountPrice: 249.99,
+    deliveryTime: '3-5 business days',
+    returnPolicy: '30-day return policy for unworn items',
+    photos: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
+    video: 'https://example.com/wig-video.mp4',
+    hairType: 'human',
+    wigStyle: 'wavy',
+    hairLength: '18 inches',
+    hairColor: 'Natural Black',
+    density: '150%',
+    capSize: 'medium',
+    capType: 'laceFront',
+    adjustableStraps: true,
+    combsIncluded: true,
+    heatResistance: true,
+    prePlucked: true,
+    babyHairs: true,
+    bleachedKnots: true,
+    customizable: false,
+  }
+}
 
-//   <div>
-//     <Label htmlFor="description">Description</Label>
-//     <Textarea id="description" placeholder="Detailed description..." />
-//   </div>
+export default function ProductPage() {
+  const router = useRouter()
+  const { id } = router.query
+  const [product, setProduct] = useState(null)
 
-//   <div>
-//     <Label htmlFor="price">Price</Label>
-//     <Input id="price" type="number" placeholder="0.00" />
-//   </div>
+  useEffect(() => {
+    if (id) {
+      const fetchedProduct = getProduct(id)
+      setProduct(fetchedProduct)
+    }
+  }, [id])
 
-//   <div>
-//     <Label htmlFor="quantity">Quantity/Stock Availability</Label>
-//     <Input id="quantity" type="number" />
-//   </div>
+  if (!product) {
+    return <div>Loading...</div>
+  }
 
-//   {category === 'wig' ? (
-//     <>
-//       <div>
-//         <Label>Hair Type</Label>
-//         <RadioGroup defaultValue="human">
-//           <div className="flex items-center space-x-2">
-//             <RadioGroupItem value="human" id="human" />
-//             <Label htmlFor="human">Human Hair</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <RadioGroupItem value="synthetic" id="synthetic" />
-//             <Label htmlFor="synthetic">Synthetic Hair</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <RadioGroupItem value="blended" id="blended" />
-//             <Label htmlFor="blended">Blended Hair</Label>
-//           </div>
-//         </RadioGroup>
-//       </div>
+  const isWig = product.category === 'wig'
 
-//       <div>
-//         <Label htmlFor="wigStyle">Wig Style</Label>
-//         <Select>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Select a style" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="curly">Curly</SelectItem>
-//             <SelectItem value="straight">Straight</SelectItem>
-//             <SelectItem value="wavy">Wavy</SelectItem>
-//             <SelectItem value="braided">Braided</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div>
+          <div className="aspect-square relative mb-4">
+            <Image
+              src={product.photos[0] || '/placeholder.svg'}
+              alt={product.name}
+              fill
+              className="object-cover rounded-lg"
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {product.photos.slice(1, 4).map((photo, index) => (
+              <div key={index} className="aspect-square relative">
+                <Image
+                  src={photo}
+                  alt={`${product.name} - view ${index + 2}`}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge>{product.category}</Badge>
+            <Badge variant="outline">{product.brand}</Badge>
+          </div>
+          <p className="text-xl font-semibold mb-2">
+            ${product.discountPrice || product.price}
+            {product.discountPrice && (
+              <span className="text-sm text-gray-500 line-through ml-2">
+                ${product.price}
+              </span>
+            )}
+          </p>
+          <p className="mb-4">{product.description}</p>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Details</h2>
+              <ul className="space-y-1">
+                {isWig && (
+                  <>
+                    <li>Hair Type: {product.hairType}</li>
+                    <li>Style: {product.wigStyle}</li>
+                    <li>Length: {product.hairLength}</li>
+                    <li>Color: {product.hairColor}</li>
+                    <li>Density: {product.density}</li>
+                    <li>Cap Size: {product.capSize}</li>
+                    <li>Cap Type: {product.capType}</li>
+                  </>
+                )}
+                {!isWig && product.productType && (
+                  <li>Product Type: {product.productType}</li>
+                )}
+                {!isWig && product.size && (
+                  <li>Size: {product.size}</li>
+                )}
+                {!isWig && product.scent && (
+                  <li>Scent: {product.scent}</li>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Features</h2>
+              <ul className="space-y-1">
+                {isWig && (
+                  <>
+                    <li>
+                      <BooleanFeature 
+                        value={product.adjustableStraps}
+                        label="Adjustable Straps"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.combsIncluded}
+                        label="Combs Included"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.heatResistance}
+                        label="Heat Resistant"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.prePlucked}
+                        label="Pre-plucked"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.babyHairs}
+                        label="Baby Hairs"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.bleachedKnots}
+                        label="Bleached Knots"
+                      />
+                    </li>
+                    <li>
+                      <BooleanFeature 
+                        value={product.customizable}
+                        label="Customizable"
+                      />
+                    </li>
+                  </>
+                )}
+                {!isWig && product.targetHairType && (
+                  <li>Target Hair Types: {product.targetHairType.join(', ')}</li>
+                )}
+                {!isWig && product.hairConcerns && (
+                  <li>Addresses: {product.hairConcerns.join(', ')}</li>
+                )}
+              </ul>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-2">Care Instructions</h2>
+            <p>{product.careInstructions}</p>
+          </div>
+          <div className="flex gap-4 mb-6">
+            <Button>Add to Cart</Button>
+            <Button variant="outline">Add to Wishlist</Button>
+          </div>
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="text-lg font-semibold mb-2">Shipping & Returns</h2>
+              <p>Delivery Time: {product.deliveryTime}</p>
+              <p>Return Policy: {product.returnPolicy}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      {product.video && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Product Video</h2>
+          <video controls className="w-full max-w-3xl mx-auto rounded-lg">
+            <source src={product.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      )}
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Tags</h2>
+        <div className="flex flex-wrap gap-2">
+          {product.tags.map((tag) => (
+            <Badge key={tag} variant="secondary">{tag}</Badge>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
-//       <div>
-//         <Label htmlFor="hairLength">Hair Length</Label>
-//         <Input id="hairLength" placeholder="e.g., 14 inches" />
-//       </div>
-
-//       <div>
-//         <Label htmlFor="hairColor">Hair Color</Label>
-//         <Input id="hairColor" placeholder="e.g., Black, Blonde, Brown" />
-//       </div>
-
-//       <div>
-//         <Label htmlFor="density">Density</Label>
-//         <Input id="density" placeholder="e.g., 150%" />
-//       </div>
-
-//       <div>
-//         <Label htmlFor="capSize">Cap Size</Label>
-//         <Select>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Select a cap size" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="small">Small</SelectItem>
-//             <SelectItem value="medium">Medium</SelectItem>
-//             <SelectItem value="large">Large</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
-
-//       <div>
-//         <Label htmlFor="capType">Cap Type</Label>
-//         <Select>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Select a cap type" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="laceFront">Lace Front</SelectItem>
-//             <SelectItem value="fullLace">Full Lace</SelectItem>
-//             <SelectItem value="uPart">U-Part</SelectItem>
-//             <SelectItem value="360Lace">360 Lace</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="adjustableStraps" />
-//         <Label htmlFor="adjustableStraps">Adjustable Straps</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="combsIncluded" />
-//         <Label htmlFor="combsIncluded">Combs Included</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="heatResistance" />
-//         <Label htmlFor="heatResistance">Heat Resistance</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="prePlucked" />
-//         <Label htmlFor="prePlucked">Pre-Plucked Hairline</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="babyHairs" />
-//         <Label htmlFor="babyHairs">Baby Hairs</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="bleachedKnots" />
-//         <Label htmlFor="bleachedKnots">Bleached Knots</Label>
-//       </div>
-
-//       <div className="flex items-center space-x-2">
-//         <Checkbox id="customizable" />
-//         <Label htmlFor="customizable">Customizable</Label>
-//       </div>
-//     </>
-//   ) : (
-//     <>
-//       <div>
-//         <Label htmlFor="productType">Product Type</Label>
-//         <Select>
-//           <SelectTrigger>
-//             <SelectValue placeholder="Select a product type" />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="shampoo">Shampoo</SelectItem>
-//             <SelectItem value="conditioner">Conditioner</SelectItem>
-//             <SelectItem value="oil">Oil</SelectItem>
-//             <SelectItem value="serum">Serum</SelectItem>
-//             <SelectItem value="mask">Mask</SelectItem>
-//             <SelectItem value="gel">Gel</SelectItem>
-//             <SelectItem value="spray">Spray</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
-
-//       <div>
-//         <Label>Target Hair Type</Label>
-//         <div className="grid grid-cols-2 gap-4">
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="dry" />
-//             <Label htmlFor="dry">Dry</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="oily" />
-//             <Label htmlFor="oily">Oily</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="normal" />
-//             <Label htmlFor="normal">Normal</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="curly" />
-//             <Label htmlFor="curly">Curly</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="straight" />
-//             <Label htmlFor="straight">Straight</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="allTypes" />
-//             <Label htmlFor="allTypes">All Types</Label>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div>
-//         <Label>Hair Concerns Addressed</Label>
-//         <div className="grid grid-cols-2 gap-4">
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="frizz" />
-//             <Label htmlFor="frizz">Frizz</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="breakage" />
-//             <Label htmlFor="breakage">Breakage</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="dandruff" />
-//             <Label htmlFor="dandruff">Dandruff</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="hairLoss" />
-//             <Label htmlFor="hairLoss">Hair Loss</Label>
-//           </div>
-//           <div className="flex items-center space-x-2">
-//             <Checkbox id="splitEnds" />
-//             <Label htmlFor="splitEnds">Split Ends</Label>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div>
-//         <Label htmlFor="size">Size/Volume</Label>
-//         <Input id="size" placeholder="e.g., 200ml, 8oz" />
-//       </div>
-
-//       <div>
-//         <Label htmlFor="scent">Scent/Fragrance</Label>
-//         <Input id="scent" placeholder="e.g., Lavender, Coconut" />
-//       </div>
-//     </>
-//   )}
-
-//   <div className="border-t border-gray-200 pt-4 mt-4">
-//     <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
-//   </div>
-//   <div>
-//     <Label htmlFor="photos">Product Photos</Label>
-//     <Input id="photos" type="file" multiple />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="video">Video Upload (Optional)</Label>
-//     <Input id="video" type="file" accept="video/*" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="brand">Brand Name</Label>
-//     <Input id="brand" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="careInstructions">Care Instructions</Label>
-//     <Textarea id="careInstructions" placeholder="e.g., Wash in lukewarm water with mild shampoo" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="tags">Tags or Keywords</Label>
-//     <Input id="tags" placeholder="e.g., Straight, Blonde, Short Wig" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="discountPrice">Discount Price (Optional)</Label>
-//     <Input id="discountPrice" type="number" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="deliveryTime">Estimated Delivery Time</Label>
-//     <Input id="deliveryTime" placeholder="e.g., 3-5 business days" />
-//   </div>
-
-//   <div>
-//     <Label htmlFor="returnPolicy">Return/Exchange Policy</Label>
-//     <Textarea id="returnPolicy" placeholder="e.g., 7-day return policy" />
-//   </div>
-
-//   <Button type="submit" className="w-full">Submit</Button>
-// </div>
-// </div>
+function BooleanFeature({ value, label }) {
+  return (
+    <div className="flex items-center">
+      {value ? (
+        <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+      ) : (
+        <XCircle className="w-4 h-4 text-red-500 mr-2" />
+      )}
+      {label}
+    </div>
+  )
+}
 

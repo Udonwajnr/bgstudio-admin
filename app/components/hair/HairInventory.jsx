@@ -134,8 +134,8 @@ const HairInventory = () => {
             {paginatedInventory.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
-                  <Image
-                    src={item.photo[0]}
+                  <img
+                    src={item?.photos[0]}
                     alt={item.name}
                     width={50}
                     height={50}
