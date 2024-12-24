@@ -45,6 +45,7 @@ export default function Home() {
       router.push('/dashboard');
     }
   },[])
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }

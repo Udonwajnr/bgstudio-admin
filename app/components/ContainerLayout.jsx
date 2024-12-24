@@ -12,7 +12,7 @@ import { Toaster, toast } from 'sonner'
 import { useAuth } from "../auth/auth-context";
 import WaitingForRole from "./WaitingForRole";
 import InitialsAvatar from 'react-initials-avatar';
-
+import api from "../axios/axiosConfig";
 export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [error,setError] = useState(false)
@@ -22,7 +22,7 @@ export default function ContainerLayout({ children }) {
 
   const logout =async()=>{
     try{
-      await axios.post("https://bgstudiobackend-1.onrender.com/api/auth/logout")
+      await api.post("https://bgstudiobackend-1.onrender.com/api/auth/logout")
       .then((data)=>{
         console.log(data)
         localStorage.removeItem('accessToken');

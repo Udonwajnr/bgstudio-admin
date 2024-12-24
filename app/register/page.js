@@ -78,7 +78,7 @@ export default function RegisterPage() {
         }
       )
 
-      if (response.status === 201) {
+      if (response.status === 200 || response.status === 201 ) {
         setSuccess(true)
         setFormData({
           username: '',
