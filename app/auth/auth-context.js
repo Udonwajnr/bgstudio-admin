@@ -95,14 +95,14 @@ export const AuthProvider = ({ children }) => {
         router.push("/");
       }
     };
-
+  console.log(document.cookie)
     checkAuth();
   }, [router]);
 
   // Login function
   const login = async (email, password) => {
     try {
-      const { data } = await api.post("https://bgstudiobackend-1.onrender.com/api/auth/login", { email, password });
+      const { data } = await api.post("http://localhost:8000/api/auth/login", { email, password });
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       setIsAuthenticated(true);

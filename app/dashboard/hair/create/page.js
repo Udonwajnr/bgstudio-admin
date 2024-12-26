@@ -325,44 +325,7 @@ export default function HairProductForm() {
 
 
       {/* Photo Upload */}
-      <div>
-          <Label>Upload Photos</Label>
-          <Input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={(e) => handleFileChange(e, 'photos')}
-          />
-          <div className="flex space-x-2 mt-2">
-            {imagePreviews.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Preview ${index + 1}`}
-                className="w-20 h-20 object-cover rounded"
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Video Upload */}
-        <div>
-          <Label>Upload Video</Label>
-          <Input
-            type="file"
-            accept="video/*"
-            onChange={(e) => handleFileChange(e, 'video')}
-          />
-          {videoPreview && (
-            <div className="mt-2">
-              <video
-                src={videoPreview}
-                controls
-                className="w-full max-w-md rounded"
-              />
-            </div>
-          )}
-        </div>
+      
         {/* Submit Button */}
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Submitting...' : 'Submit'}
