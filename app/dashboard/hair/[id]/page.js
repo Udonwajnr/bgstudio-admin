@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { CheckCircle, XCircle } from 'lucide-react'
 
 import { Badge } from "@/components/ui/badge"
@@ -9,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter,useParams } from 'next/navigation'
 // This would typically come from your API or database
-export default function getProduct() {
-  // Fetch product data here
-  // For now, we'll return a mock product
+
+ function getProduct() {
+  
   return {
     id,
     category: 'wig',
