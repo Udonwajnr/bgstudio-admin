@@ -17,26 +17,7 @@ export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [error,setError] = useState(false)
   const router = useRouter()
-  const {user, isAuthenticated} = useAuth()
-
-
-  const logout =async()=>{
-    try{
-      await api.post("https://bgstudiobackend-1.onrender.com/api/auth/logout")
-      .then((data)=>{
-        console.log(data)
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem("_id")
-        toast.success('Logout Successful:')
-        router.push('/');
-      })
-      // alert('Logout successful')
-    }
-    catch(err){
-      setError(err)
-    }
-  }
-
+  const {user, isAuthenticated,logout} = useAuth()
 
   // if (!isAuthenticated || user?.role !== "custome") {
   //   return <div><WaitingForRole/></div>; // Show a loader or message while redirecting

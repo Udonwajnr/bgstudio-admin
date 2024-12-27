@@ -1,56 +1,50 @@
-import axios from "axios";
-
+// "use server"
+import axios from 'axios';
+// Create an Axios instance
 const api = axios.create({
-  baseURL: "https://bgstudiobackend-1.onrender.com",
-  withCredentials: true, // Ensures cookies (refresh token) are sent
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: 'https://bgstudiobackend-1.onrender.com',
+    withCredentials: true, // Ensures cookies (refresh token) are sent with requests
 });
 
-// Add Authorization header to every request
-api.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (accessToken) {
-    config.headers["Authorization"] = `Bearer ${accessToken}`;
-  }
-  return config;
-});
-
-// Handle token refresh on 401
+// Add a response interceptor to handle token expiration
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+    response => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+        if (error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true; // Mark the request as retry to prevent loops
 
-      try {
-        // Request a new access token
-        const { data } = await axios.post(
-          "https://bgstudiobackend-1.onrender.com/api/auth/refresh-token",
-          {},
-          { withCredentials: true } // Sends the refresh token cookie
-        );
+            try {
+                // Attempt to get a new access token using the refresh token
+                const refreshResponse = await axios.post(
+                    'https://bgstudiobackend-1.onrender.com/api/auth/refresh-token',
+                    {},
+                    { withCredentials: true } // Ensure cookies are sent with this request
+                );
 
-        const newAccessToken = data.accessToken;
+                console.log(refreshResponse)
+                const newAccessToken = refreshResponse.data.accessToken; // Fix: Correctly set the access token
 
-        // Store the new token and update the header
-        localStorage.setItem("accessToken", newAccessToken);
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        // Retry the failed request
-        return api(originalRequest);
-      } catch (refreshError) {
-        console.error("Refresh token failed:", refreshError.response?.data || refreshError.message);
-        localStorage.removeItem("accessToken");
-        // Optionally redirect to login
-        window.location.href = "/";
-      }
+                // Store the new access token in localStorage
+                localStorage.setItem('accessToken', newAccessToken); // Use a different key for access token
+
+                // Update the Authorization header for the failed request
+                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+                // Retry the original request with the new access token
+                return api(originalRequest);
+            } catch (refreshError) {
+                // Handle refresh token failure (e.g., redirect to login)
+                console.error('Refresh token failed:', refreshError);
+                console.log(refreshError)
+                localStorage.removeItem('_id'); // Remove only the access token
+                localStorage.removeItem('accessToken'); // Remove only the access token
+                // window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
     }
-
-    return Promise.reject(error);
-  }
 );
 
 export default api;
