@@ -259,7 +259,7 @@ export default function HairOrder() {
               <CardFooter>
                 {/* <Button className="w-full">Update Order Status</Button> */}
                 <Link 
-                  href={`/dashboard/orders/hair-order/${selectedOrder._id}`} 
+                  href={`/dashboard/orders/hair-order/${selectedOrder._id}/edit`} 
                   className={`${buttonVariants({ variant: "default" })} w-full`}
                 >
                   Update Order Status
