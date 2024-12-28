@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { OrderActions } from '@/app/components/poultry/OrderActions'
 import api from '@/app/axios/axiosConfig'
+import { useRouter,useParams } from 'next/navigation'
 
 export default function OrderDetailPage() {
   const [order, setOrder] = useState(null)
