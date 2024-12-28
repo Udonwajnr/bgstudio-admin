@@ -1,89 +1,125 @@
 'use client'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { CheckCircle, XCircle } from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useRouter,useParams } from 'next/navigation'
-// This would typically come from your API or database
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 
- function getProduct() {
-  
-  return {
-    id,
-    category: 'wig',
-    name: 'Luxurious Lace Front Wig',
-    description: 'A beautiful, natural-looking lace front wig made with 100% human hair.',
-    price: 299.99,
-    quantity: 50,
-    stock: 45,
-    brand: 'GlamourLocks',
-    careInstructions: 'Gently wash with sulfate-free shampoo. Air dry or use low heat.',
-    tags: ['human hair', 'lace front', 'long'],
-    discountPrice: 249.99,
-    deliveryTime: '3-5 business days',
-    returnPolicy: '30-day return policy for unworn items',
-    photos: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
-    video: 'https://example.com/wig-video.mp4',
-    hairType: 'human',
-    wigStyle: 'wavy',
-    hairLength: '18 inches',
-    hairColor: 'Natural Black',
-    density: '150%',
-    capSize: 'medium',
-    capType: 'laceFront',
-    adjustableStraps: true,
-    combsIncluded: true,
-    heatResistance: true,
-    prePlucked: true,
-    babyHairs: true,
-    bleachedKnots: true,
-    customizable: false,
-  }
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useRouter, useParams } from 'next/navigation';
+import api from '@/app/axios/axiosConfig';
+
+function BooleanFeature({ value, label }) {
+  return (
+    <div className="flex items-center">
+      {value ? (
+        <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+      ) : (
+        <XCircle className="w-4 h-4 text-red-500 mr-2" />
+      )}
+      {label}
+    </div>
+  );
 }
 
 export default function ProductPage() {
-  const router = useRouter()
-  const { id } = router.query
-  const [product, setProduct] = useState(null)
+  const router = useRouter();
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
-      const fetchedProduct = getProduct(id)
-      setProduct(fetchedProduct)
+      api.get(`https://bgstudiobackend-1.onrender.com/api/hair/${id}`)
+        .then((response) => {
+          setProduct(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 404) {
+            setError(true);
+          }
+          setLoading(false);
+        });
     }
-  }, [id])
+  }, [id]);
 
-  if (!product) {
-    return <div>Loading...</div>
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  const isWig = product.category === 'wig'
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-3xl font-bold text-red-500">404</h1>
+        <p className="text-lg text-gray-500">Product not found.</p>
+        <Button onClick={() => router.push('/')}>Go Back to Home</Button>
+      </div>
+    );
+  }
+
+  const isWig = product.category === 'wig';
+
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === product.photos.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? product.photos.length - 1 : prevIndex - 1
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8">
         <div>
           <div className="aspect-square relative mb-4">
-            <Image
-              src={product.photos[0] || '/placeholder.svg'}
-              alt={product.name}
+            <img
+              src={product.photos[currentImageIndex] || '/placeholder.svg'}
+              alt={`${product.name} - view ${currentImageIndex + 1}`}
               fill
               className="object-cover rounded-lg"
             />
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2"
+              onClick={prevImage}
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              onClick={nextImage}
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            {product.photos.slice(1, 4).map((photo, index) => (
-              <div key={index} className="aspect-square relative">
-                <Image
+          <div className="grid grid-cols-5 gap-2">
+            {product.photos.map((photo, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className={`p-0 aspect-square relative ${index === currentImageIndex ? 'ring-2 ring-primary' : ''}`}
+                onClick={() => setCurrentImageIndex(index)}
+              >
+                <img
                   src={photo}
-                  alt={`${product.name} - view ${index + 2}`}
+                  alt={`${product.name} - thumbnail ${index + 1}`}
                   fill
-                  className="object-cover rounded-lg"
+                  className="object-cover rounded-sm"
                 />
-              </div>
+              </Button>
             ))}
           </div>
         </div>
@@ -117,15 +153,6 @@ export default function ProductPage() {
                     <li>Cap Type: {product.capType}</li>
                   </>
                 )}
-                {!isWig && product.productType && (
-                  <li>Product Type: {product.productType}</li>
-                )}
-                {!isWig && product.size && (
-                  <li>Size: {product.size}</li>
-                )}
-                {!isWig && product.scent && (
-                  <li>Scent: {product.scent}</li>
-                )}
               </ul>
             </div>
             <div>
@@ -151,37 +178,7 @@ export default function ProductPage() {
                         label="Heat Resistant"
                       />
                     </li>
-                    <li>
-                      <BooleanFeature 
-                        value={product.prePlucked}
-                        label="Pre-plucked"
-                      />
-                    </li>
-                    <li>
-                      <BooleanFeature 
-                        value={product.babyHairs}
-                        label="Baby Hairs"
-                      />
-                    </li>
-                    <li>
-                      <BooleanFeature 
-                        value={product.bleachedKnots}
-                        label="Bleached Knots"
-                      />
-                    </li>
-                    <li>
-                      <BooleanFeature 
-                        value={product.customizable}
-                        label="Customizable"
-                      />
-                    </li>
                   </>
-                )}
-                {!isWig && product.targetHairType && (
-                  <li>Target Hair Types: {product.targetHairType.join(', ')}</li>
-                )}
-                {!isWig && product.hairConcerns && (
-                  <li>Addresses: {product.hairConcerns.join(', ')}</li>
                 )}
               </ul>
             </div>
@@ -191,8 +188,8 @@ export default function ProductPage() {
             <p>{product.careInstructions}</p>
           </div>
           <div className="flex gap-4 mb-6">
-            <Button>Add to Cart</Button>
-            <Button variant="outline">Add to Wishlist</Button>
+            {/* <Button>Add to Cart</Button>
+            <Button variant="outline">Add to Wishlist</Button> */}
           </div>
           <Card>
             <CardContent className="p-4">
@@ -221,19 +218,6 @@ export default function ProductPage() {
         </div>
       </div>
     </div>
-  )
-}
-
-function BooleanFeature({ value, label }) {
-  return (
-    <div className="flex items-center">
-      {value ? (
-        <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-      ) : (
-        <XCircle className="w-4 h-4 text-red-500 mr-2" />
-      )}
-      {label}
-    </div>
-  )
+  );
 }
 

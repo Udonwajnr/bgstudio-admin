@@ -162,8 +162,8 @@ const HairInventory = () => {
                   </Link>
 
                   <Link href={`/dashboard/hair/${item._id}`}>
-                    <Button>
-                      <Eye className="mr-2 h-4 w-4" />
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
                     </Button>
                   </Link>
                 </TableCell>
