@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import api from "@/app/axios/axiosConfig"
-
+import {toast} from "sonner"
 export default function EditOrderForm() {
   const router = useRouter()
   const params = useParams()
@@ -46,7 +46,7 @@ export default function EditOrderForm() {
     e.preventDefault()
     try {
       await api.patch(`https://bgstudiobackend-1.onrender.com/api/hair-order/${params.id}/status`, { status: order.status })
-      alert("Order status updated successfully!")
+      toast.success("Order status updated successfully!")
       router.push('/dashboard/orders') // Redirect to orders page or refresh
     } catch (error) {
       console.error("Error updating order status:", error)

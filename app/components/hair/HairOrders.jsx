@@ -36,6 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import api from '@/app/axios/axiosConfig';
+import Link from 'next/link';
+import { buttonVariants } from "@/components/ui/button"
+
 
 export default function HairOrder() {
   const [orders, setOrders] = useState([]);
@@ -189,9 +192,11 @@ export default function HairOrder() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
+                        <Link href={`/dashboard/orders/hair-order/${order._id}`}>
+                          <Button variant="ghost" size="sm">
+                            View
+                          </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -224,6 +229,7 @@ export default function HairOrder() {
               <CardDescription>Detailed view of the selected order</CardDescription>
             </CardHeader>
             {selectedOrder ? (
+              <>
               <CardContent>
                 <div className="space-y-4">
                   <div>
@@ -249,14 +255,24 @@ export default function HairOrder() {
                   </div>
                 </div>
               </CardContent>
+              
+              <CardFooter>
+                {/* <Button className="w-full">Update Order Status</Button> */}
+                <Link 
+                  href={`/dashboard/orders/hair-order/${selectedOrder._id}`} 
+                  className={`${buttonVariants({ variant: "default" })} w-full`}
+                >
+                  Update Order Status
+                </Link>
+              </CardFooter>
+              </>
+
+              
             ) : (
               <CardContent>
                 <p>No order selected</p>
               </CardContent>
             )}
-            <CardFooter>
-              <Button className="w-full">Update Order Status</Button>
-            </CardFooter>
           </Card>
         </div>
       </Tabs>

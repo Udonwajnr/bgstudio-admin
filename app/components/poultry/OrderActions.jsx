@@ -1,11 +1,14 @@
 "use client"
-
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
+import {useRouter} from "next/navigation"
+import Link from 'next/link'
+import { buttonVariants } from "@/components/ui/button"
 
 export function OrderActions({ orderId }) {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-
+  
   const handlePrintOrder = async () => {
     setIsLoading(true)
     // Simulating an API call or print process
@@ -19,10 +22,15 @@ export function OrderActions({ orderId }) {
 
   return (
     <div className="space-x-2">
-      <Button variant="outline" onClick={handlePrintOrder} disabled={isLoading}>
+      <Button variant="outline" onClick={handlePrintOrder}
+      disabled={true}
+      // disabled={isLoading}
+      >
         {isLoading ? "Printing..." : "Print Order"}
       </Button>
-      <Button variant="default">Edit Order</Button>
+      <Link href={`/dashboard/orders/hair-order/${orderId}/edit`} className={buttonVariants({ variant: "default" })}>
+        Edit Order
+      </Link>
     </div>
   )
 }

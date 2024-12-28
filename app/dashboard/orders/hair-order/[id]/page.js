@@ -53,7 +53,7 @@ export default function OrderDetailPage() {
               {order.status}
             </Badge>
           </div>
-          <CardDescription>Order ID: {order.id}</CardDescription>
+          <CardDescription>Order ID: {order.orderId}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
@@ -63,9 +63,22 @@ export default function OrderDetailPage() {
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Date</h3>
-              <p className="mt-1 text-sm text-gray-900">{order.date}</p>
+              <p className="mt-1 text-sm text-gray-900">
+                  {new Date(order.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
+                </p>
             </div>
           </div>
+          <div>
+              <h3 className="text-sm font-medium text-gray-500">Phone</h3>
+              <p className="mt-1 text-sm text-gray-900">{order.phone}</p>
+            </div>
           <div>
             <h3 className="text-sm font-medium text-gray-500 mb-2">Order Items</h3>
             <Table>
@@ -92,7 +105,7 @@ export default function OrderDetailPage() {
         </CardContent>
         <CardFooter className="flex justify-between items-center">
           <div className="text-lg font-semibold">Total: ${order.total.toFixed(2)}</div>
-          <OrderActions orderId={order.id} />
+          <OrderActions orderId={order._id} />
         </CardFooter>
       </Card>
     </div>
