@@ -1,33 +1,46 @@
 'use client'
 
-import { notFound } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { notFound, useRouter, useParams } from 'next/navigation'
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { OrderActions } from '@/app/components/poultry/OrderActions'
 import api from '@/app/axios/axiosConfig'
-// This would typically come from a database
-const getOrderById = (id) => {
-  // Simulating database fetch
-  const order = {
-    id: "ORD001",
-    customer: "Alice Johnson",
-    date: "2023-06-01",
-    total: 125.99,
-    status: "Delivered",
-    items: [
-      { name: "Organic Eggs (Dozen)", quantity: 2, price: 5.99 },
-      { name: "Free-Range Chicken Eggs (18-pack)", quantity: 1, price: 8.99 },
-    ]
+
+export default function OrderDetailPage() {
+  const [order, setOrder] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const { id } = useParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const response = await api.get(`https://bgstudiobackend-1.onrender.com/api/poultry-order/${id}`) 
+        const data = response.data
+        setOrder(data)
+      } catch (err) {
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchOrder()
+    }
+  }, [id])
+
+  console.log(order)
+  if (loading) {
+    return <div className="container mx-auto py-10">Loading...</div>
   }
-  return id === order.id ? order : null
-}
 
-export default function OrderDetailPage({ params }) {
-  const order = getOrderById(params.id)
-
-  if (!order) {
+  if (error || !order) {
     notFound()
+    return null // This will ensure the page renders nothing if the order is not found
   }
 
   return (
@@ -49,22 +62,20 @@ export default function OrderDetailPage({ params }) {
               <p className="mt-1 text-sm text-gray-900">{order.customer}</p>
             </div>
             <div>
+              <div>
                 <h3 className="text-sm font-medium text-gray-500">Date</h3>
                 <p className="mt-1 text-sm text-gray-900">
                   {new Date(order.date).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
-                  })}
-                </p>
-                <p className="mt-1 text-sm text-gray-900">
-                  {new Date(order.date).toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
                   })}
                 </p>
               </div>
+            </div>
 
           </div>
           <div>
@@ -99,4 +110,3 @@ export default function OrderDetailPage({ params }) {
     </div>
   )
 }
-

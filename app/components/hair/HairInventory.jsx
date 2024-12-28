@@ -11,6 +11,7 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +97,8 @@ const HairInventory = () => {
             <Plus className="mr-2 h-4 w-4" /> Add New Product
           </Button>
         </Link>
+
+        
       </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -154,7 +157,13 @@ const HairInventory = () => {
                   </Link>
                   <Link href={`/dashboard/hair/${item._id}/delete`}>
                     <Button variant="ghost" size="sm">
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" color="red"/>
+                    </Button>
+                  </Link>
+
+                  <Link href={`/dashboard/hair/${item._id}`}>
+                    <Button>
+                      <Eye className="mr-2 h-4 w-4" />
                     </Button>
                   </Link>
                 </TableCell>

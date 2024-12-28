@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(data.accessToken);
       localStorage.setItem("accessToken", data.accessToken);
       setIsAuthenticated(true);
+
       router.push("/dashboard");
     } catch (error) {
       const message = error.response?.data?.message || "Login failed. Please try again.";

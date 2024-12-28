@@ -202,7 +202,6 @@ export default function HairProductDashboard() {
         <TabsContent value="Inventory" className="space-y-4">
           <Card>
             <HairInventory/>
-
           </Card>
         </TabsContent>
 
