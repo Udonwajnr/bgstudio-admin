@@ -24,10 +24,10 @@ import api from "@/app/axios/axiosConfig";
 
 export default function ProductForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    productName: "",
     category: "",
     price: "",
-    quantity: "",
+    stock: "",
     sales: "0",
     image: null,
   });
@@ -53,7 +53,18 @@ export default function ProductForm() {
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
+    
+    
     if (file) {
+      // Validate file type
+      const allowedExtensions = ["jpg", "jpeg", "png"];
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+
+      if (!allowedExtensions.includes(fileExtension)) {
+        setErrors({ image: "Only JPG, JPEG, and PNG files are allowed." });
+        return;
+      }
+
       setFormData((prevData) => ({
         ...prevData,
         image: file,
@@ -68,7 +79,7 @@ export default function ProductForm() {
 
   const validateForm = () => {
     let newErrors = {};
-    if (formData.name.length < 2) {
+    if (formData.productName.length < 2) {
       newErrors.name = "Product name must be at least 2 characters.";
     }
     if (!formData.category) {
@@ -77,8 +88,8 @@ export default function ProductForm() {
     if (isNaN(parseFloat(formData.price)) || parseFloat(formData.price) <= 0) {
       newErrors.price = "Price must be a positive number.";
     }
-    if (!Number.isInteger(Number(formData.quantity)) || Number(formData.quantity) < 0) {
-      newErrors.quantity = "Quantity must be a non-negative integer.";
+    if (!Number.isInteger(Number(formData.stock)) || Number(formData.stock) < 0) {
+      newErrors.stock = "Stock must be a non-negative integer.";
     }
     if (!formData.image) {
       newErrors.image = "Please upload an image.";
@@ -100,7 +111,7 @@ export default function ProductForm() {
         });
 
         const response = await api.post(
-          "https://bgstudiobackend-1.onrender.com/api/poultry",
+          "http://localhost:8000/api/poultry",
           formDataToSend,
           {
             headers: {
@@ -111,10 +122,10 @@ export default function ProductForm() {
         toast.success("Product submitted successfully");
         console.log(response.data);
         setFormData({
-          name: "",
+          productName: "",
           category: "",
           price: "",
-          quantity: "",
+          stock: "",
           sales: "0",
           image: null,
         });
@@ -144,16 +155,16 @@ export default function ProductForm() {
           {/* Name field */}
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
-              Name
+              Product Name
             </label>
             <Input
-              id="name"
-              name="name"
-              value={formData.name}
+              id="productName"
+              name="productName"
+              value={formData.productName}
               onChange={handleChange}
               placeholder="Enter product name"
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-red-500">{errors.productName}</p>}
             <p className="text-sm text-muted-foreground">
               The name of the product as it will appear to customers.
             </p>
@@ -195,20 +206,20 @@ export default function ProductForm() {
               />
               {errors.price && <p className="text-sm text-red-500">{errors.price}</p>}
             </div>
-            {/* Quantity */}
+            {/* stock */}
             <div className="space-y-2">
-              <label htmlFor="quantity" className="text-sm font-medium">
-                Quantity
+              <label htmlFor="stock" className="text-sm font-medium">
+                stock
               </label>
               <Input
-                id="quantity"
-                name="quantity"
+                id="stock"
+                name="stock"
                 type="number"
-                value={formData.quantity}
+                value={formData.stock}
                 onChange={handleChange}
                 placeholder="0"
               />
-              {errors.quantity && <p className="text-sm text-red-500">{errors.quantity}</p>}
+              {errors.stock && <p className="text-sm text-red-500">{errors.stock}</p>}
             </div>
           </div>
           {/* Image upload */}
