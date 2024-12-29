@@ -247,14 +247,36 @@ export default function PoultryInventory() {
     },
   })
 
-  const deleteSelectedItems = () => {
+  const deleteSelectedItems = async () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows
-    const newData = data.filter(item => !selectedRows.some(row => row.original.id === item.id))
-    setData(newData)
-    setRowSelection({})
-    toast.success(`${selectedRows.length} item(s) deleted successfully.`)
-  }
+    console.log('Selected Rows:', selectedRows)
+    console.log('Row Selection State:', rowSelection)
 
+    if (!selectedRows || selectedRows.length === 0) {
+      console.error('No rows selected or selection data is undefined')
+      toast.error('No items selected for deletion. Please select items and try again.')
+      return
+    }
+
+    const selectedIds = selectedRows.map(row => row.original._id)
+    console.log('Selected IDs:', selectedIds)
+
+    try {
+      const response = await api.post('https://bgstudiobackend-1.onrender.com/api/poultry/delete-multiple-poultry-product', {
+        ids: selectedIds
+      })
+      console.log('API Response:', response)
+
+      // Update local state after successful deletion
+      const newData = data.filter(item => !selectedIds.includes(item.id))
+      setData(newData)
+      setRowSelection({})
+      toast.success(`${selectedRows.length} item(s) deleted successfully.`)
+    } catch (error) {
+      console.error('Error deleting items:', error)
+      toast.error('Failed to delete selected items. Please try again.')
+    }
+  }
   return (
     <Card className="px-3">
       <CardHeader>
