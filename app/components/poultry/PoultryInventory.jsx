@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState,useEffect } from "react"
 import {
   CaretSortIcon,
   ChevronDownIcon,
@@ -50,49 +50,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
-const initialData = [
-  {
-    id: "EGG001",
-    name: "Organic Free-Range Eggs",
-    category: "Organic",
-    price: 5.99,
-    stock: 500,
-    sales: 1200,
-  },
-  {
-    id: "EGG002",
-    name: "Cage-Free Brown Eggs",
-    category: "Cage-Free",
-    price: 4.49,
-    stock: 750,
-    sales: 980,
-  },
-  {
-    id: "EGG003",
-    name: "Pasture-Raised Eggs",
-    category: "Organic",
-    price: 6.99,
-    stock: 300,
-    sales: 650,
-  },
-  {
-    id: "EGG004",
-    name: "White Eggs",
-    category: "Conventional",
-    price: 3.99,
-    stock: 1000,
-    sales: 1500,
-  },
-  {
-    id: "EGG005",
-    name: "Omega-3 Enriched Eggs",
-    category: "Specialty",
-    price: 5.49,
-    stock: 400,
-    sales: 720,
-  },
-]
+import api from "@/app/axios/axiosConfig"
 
 const columns = [
   {
@@ -115,7 +73,7 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "productName",
     header: ({ column }) => {
       return (
         <Button
@@ -127,7 +85,7 @@ const columns = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue("productName")}</div>,
   },
   {
     accessorKey: "category",
@@ -219,7 +177,7 @@ const columns = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(product.id)
+                navigator.clipboard.writeText(product_.id)
                 toast.success("ID Copied successfully.")
               }}
             >
@@ -227,17 +185,17 @@ const columns = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/dashboard/poultry/${product.id}`}>
+              <Link href={`/dashboard/poultry/${product._id}`}>
                 View product details
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={`/dashboard/poultry/${product.id}/edit`}>
+              <Link href={`/dashboard/poultry/${product._id}/edit`}>
                 Edit product 
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="text-red-500">
-              <Link href={`/dashboard/poultry/${product.id}/delete`}>
+              <Link href={`/dashboard/poultry/${product._id}/delete`}>
                 Delete product
               </Link>
             </DropdownMenuItem>
@@ -249,11 +207,25 @@ const columns = [
 ]
 
 export default function poultryInventory() {
+  
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState(initialData)
+  const [data, setData] = useState([]) // Updated initial state
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get('https://bgstudiobackend-1.onrender.com/api/poultry')
+        setData(response.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        toast.error('Failed to fetch poultry data')
+      }
+    }
+    fetchData()
+  }, [])
 
   const table = useReactTable({
     data,

@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import api from "@/app/axios/axiosConfig";
 
 const HairInventory = () => {
   const [inventory, setInventory] = useState([]);
@@ -37,7 +38,7 @@ const HairInventory = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "https://bgstudiobackend-1.onrender.com/api/hair"
         );
         setInventory(response.data.products || []);
