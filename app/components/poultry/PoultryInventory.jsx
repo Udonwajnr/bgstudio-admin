@@ -207,7 +207,7 @@ const columns = [
   },
 ]
 
-export default function poultryInventory() {
+export default function PoultryInventory() {
   
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
