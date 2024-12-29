@@ -111,7 +111,7 @@ export default function ProductForm() {
         });
 
         const response = await api.post(
-          "http://localhost:8000/api/poultry",
+          "https://bgstudiobackend-1.onrender.com/api/poultry",
           formDataToSend,
           {
             headers: {
@@ -179,11 +179,8 @@ export default function ProductForm() {
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="electronics">Electronics</SelectItem>
-                <SelectItem value="clothing">Clothing</SelectItem>
-                <SelectItem value="books">Books</SelectItem>
-                <SelectItem value="home">Home & Garden</SelectItem>
-                <SelectItem value="toys">Toys & Games</SelectItem>
+                <SelectItem value="eggs">Eggs</SelectItem>
+                <SelectItem value="feed">Feed</SelectItem>
               </SelectContent>
             </Select>
             {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
