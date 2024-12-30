@@ -1,39 +1,58 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useParams } from "next/navigation"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import api from "@/app/axios/axiosConfig"
+import {toast} from "sonner"
 
-export default function EditOrderForm() {
+export default function EditPoultryOrderForm() {
+  const router = useRouter()
+  const params = useParams()
   const [order, setOrder] = useState({
-    id: "ORD001",
-    customer: "Alice Johnson",
-    date: "2023-06-01",
-    total: 125.99,
-    status: "Delivered",
-    items: [
-      { name: "Organic Eggs (Dozen)", quantity: 2, price: 5.99 },
-      { name: "Free-Range Chicken Eggs (18-pack)", quantity: 1, price: 8.99 },
-    ]
+    id: "",
+    customer: "",
+    date: "",
+    total: 0,
+    status: "",
+    items: []
   })
 
-  const handleInputChange = (e) => {
-    setOrder({ ...order, [e.target.name]: e.target.value })
-  }
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const response = await api.get(`https://bgstudiobackend-1.onrender.com/api/poultry-order/${params.id}`)
+        setOrder(response.data)
+      } catch (error) {
+        console.error("Error fetching order:", error)
+        // Handle error (e.g., show error message, redirect)
+      }
+    }
+
+    if (params.id) {
+      fetchOrder()
+    }
+  }, [params.id])
 
   const handleStatusChange = (value) => {
     setOrder({ ...order, status: value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Here you would typically send the order data to a server
-    console.log("Submitting order:", order)
-    alert("Order submitted successfully!")
+    try {
+      await api.patch(`https://bgstudiobackend-1.onrender.com/api/poultry-order/${params.id}/status`, { status: order.status })
+      toast.success("Order status updated successfully!")
+      router.push('/dashboard/orders') // Redirect to orders page or refresh
+    } catch (error) {
+      console.error("Error updating order status:", error)
+      alert("Failed to update order status. Please try again.")
+    }
   }
 
   return (
@@ -46,26 +65,26 @@ export default function EditOrderForm() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="id">Order ID</Label>
-              <Input id="id" name="id" value={order.id} onChange={handleInputChange} readOnly />
+              <Input id="id" name="id" value={order.orderId} disabled />
             </div>
             <div className="space-y-2">
               <Label htmlFor="customer">Customer</Label>
-              <Input id="customer" name="customer" value={order.customer} onChange={handleInputChange} />
+              <Input id="customer" name="customer" value={order.customer} disabled />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="date">Date</Label>
-              <Input id="date" name="date" type="date" value={order.date} onChange={handleInputChange} />
+              <Input id="date" name="date"  type="datetime-local" value={ order.date? new Date(order?.date).toISOString().slice(0, 16):""} disabled />
             </div>
             <div className="space-y-2">
               <Label htmlFor="total">Total</Label>
-              <Input id="total" name="total" type="number" value={order.total} onChange={handleInputChange} step="0.01" />
+              <Input id="total" name="total" type="number" value={order.total} disabled step="0.01" />
             </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select onValueChange={handleStatusChange} defaultValue={order.status}>
+            <Select onValueChange={handleStatusChange} value={order.status}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -74,6 +93,7 @@ export default function EditOrderForm() {
                 <SelectItem value="Processing">Processing</SelectItem>
                 <SelectItem value="Shipped">Shipped</SelectItem>
                 <SelectItem value="Delivered">Delivered</SelectItem>
+                <SelectItem value="Cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -100,7 +120,7 @@ export default function EditOrderForm() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full">Submit Order</Button>
+          <Button type="submit" className="w-full">Update Order Status</Button>
         </CardFooter>
       </Card>
     </form>

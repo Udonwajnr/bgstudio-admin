@@ -157,7 +157,7 @@ export default function PoultryOrder() {
         <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
           <Card className="w-full lg:w-2/3">
             <CardHeader>
-              <CardTitle>Hair Orders</CardTitle>
+              <CardTitle>Poultry Orders</CardTitle>
               <CardDescription>Manage and view all customer orders</CardDescription>
             </CardHeader>
             <CardContent>
@@ -192,7 +192,7 @@ export default function PoultryOrder() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Link href={`/dashboard/orders/hair-order/${order._id}`}>
+                        <Link href={`/dashboard/orders/poultry-order/${order._id}`}>
                           <Button variant="ghost" size="sm">
                             View
                           </Button>
@@ -259,7 +259,7 @@ export default function PoultryOrder() {
               <CardFooter>
                 {/* <Button className="w-full">Update Order Status</Button> */}
                 <Link 
-                  href={`/dashboard/orders/hair-order/${selectedOrder._id}/edit`} 
+                  href={`/dashboard/orders/poultry-order/${selectedOrder._id}/edit`} 
                   className={`${buttonVariants({ variant: "default" })} w-full`}
                 >
                   Update Order Status

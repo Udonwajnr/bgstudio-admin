@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import api from "@/app/axios/axiosConfig"
 import {toast} from "sonner"
-export default function EditOrderForm() {
+export default function EditHairOrderForm() {
   const router = useRouter()
   const params = useParams()
   const [order, setOrder] = useState({
