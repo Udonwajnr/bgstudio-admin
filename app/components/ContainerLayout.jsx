@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import axios from "axios"
 import { Toaster, toast } from 'sonner'
 import { useAuth } from "../auth/auth-context";
 import WaitingForRole from "./WaitingForRole";
-import InitialsAvatar from 'react-initials-avatar';
-import api from "../axios/axiosConfig";
+
 export default function ContainerLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [error,setError] = useState(false)
@@ -53,6 +51,8 @@ export default function ContainerLayout({ children }) {
           <Cog className="mr-3 h-5 w-5" />
           Settings
         </Link> */}
+
+
       </nav>
     </>
   )
