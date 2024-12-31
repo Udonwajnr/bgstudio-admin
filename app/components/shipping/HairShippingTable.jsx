@@ -204,10 +204,10 @@ export default function HairShippingTable({ data }) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEdit(item._id)}>
+                        {/* <DropdownMenuItem onClick={() => handleEdit(item._id)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem>
                           <Link href={`/dashboard/shipping/hair-shipping/${item._id}`} className="flex gap-x-2 items-center">
                             <Eye className="mr-2 h-4 w-4 " />
