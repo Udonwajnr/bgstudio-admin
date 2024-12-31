@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { BarChart3, ChevronDown, Cog, FileText, LayoutDashboard, Loader2, Menu, Package, ShoppingCart, X } from "lucide-react"
+import { BarChart3, ChevronDown, Cog, FileText, LayoutDashboard, Loader2,Truck, Menu, Package, ShoppingCart, X } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
@@ -47,10 +47,10 @@ export default function ContainerLayout({ children }) {
           <FileText className="mr-3 h-5 w-5" />
           Bookings
         </Link>
-        {/* <Link href="#" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-          <Cog className="mr-3 h-5 w-5" />
-          Settings
-        </Link> */}
+        <Link href="/dashboard/shipping" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <Truck className="mr-3 h-5 w-5"/>
+          Shipping
+        </Link>
 
 
       </nav>

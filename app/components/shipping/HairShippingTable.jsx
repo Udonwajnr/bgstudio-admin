@@ -25,8 +25,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link'
+import api from '@/app/axios/axiosConfig'
+import {toast} from "sonner"
 
-export default function ShippingTable({ data }) {
+export default function HairShippingTable({ data }) {
+  
+  const [shippingData, setShippingData] = useState(data);
   const [filters, setFilters] = useState({
     customerName: '',
     status: '',
@@ -34,7 +38,7 @@ export default function ShippingTable({ data }) {
     endDate: null,
   })
 
-  const filteredData = data.filter((item) => {
+  const filteredData = shippingData.filter((item) => {
     return (
       item.customerName.toLowerCase().includes(filters.customerName.toLowerCase()) &&
       (filters.status === '' || item.status === filters.status) &&
@@ -47,18 +51,52 @@ export default function ShippingTable({ data }) {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleStatusChange = (id, newStatus) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item._id === id ? { ...item, status: newStatus } : item
-      )
-    )
-  }
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      // Send API request to update the status
+      await api.patch(`https://bgstudiobackend-1.onrender.com/api/hair-shipping/shipping/${id}/status`, {
+        status: newStatus,
+      });
 
-  const handleEdit = (id) => {
-    // Implement edit functionality
-    console.log(`Edit item with id: ${id}`)
-  }
+      // Update the local state immediately
+      setShippingData((prevData) =>
+        prevData.map((item) =>
+          item._id === id ? { ...item, status: newStatus } : item
+        )
+      );
+
+      toast.success("Shipping status updated");
+    } catch (error) {
+      console.error("Error updating shipping status:", error);
+      toast.error("Failed to update shipping status");
+    }
+  };
+
+  // const handleCancelled = async (id) => {
+  //   try {
+  //     // Send API request to update the status
+  //     await api.patch(`https://bgstudiobackend-1.onrender.com/api/salon/${id}/status`, {
+  //       status: "Cancelled",
+  //     });
+  // 
+  //     // Update the local state only after the API request succeeds
+  //     setBookings(
+  //       bookings.map((booking) =>
+  //         booking._id === id ? { ...booking, status: "Cancelled" } : booking
+  //       )
+  //     )
+  //     toast.success("Booking status updated")
+  //     
+  //     ;
+  //   } catch (error) {
+  //     console.error("Error updating booking status:", error);
+  //   }
+  // };
+
+  // const handleEdit = (id) => {
+  //   // Implement edit functionality
+  //   console.log(`Edit item with id: ${id}`)
+  // }
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
@@ -139,7 +177,7 @@ export default function ShippingTable({ data }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((item) => (
+              {shippingData.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell className="font-medium">{item.customerName}</TableCell>
                   <TableCell>
@@ -171,21 +209,27 @@ export default function ShippingTable({ data }) {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Link href={`/dashboard/shipping/${item._id}`} className="flex gap-x-2 items-center">
+                          <Link href={`/dashboard/shipping/hair-shipping/${item._id}`} className="flex gap-x-2 items-center">
                             <Eye className="mr-2 h-4 w-4 " />
                             View
                           </Link> 
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Delivered')}>
+                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Delivered')}
+                         disabled={item.status === "Delivered"}  
+                        >
                           <Check className="mr-2 h-4 w-4" />
                           Mark as Delivered
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Shipped')}>
+                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Shipped')}
+                         disabled={item.status === "Shipped"}
+                        >
                           <Truck className="mr-2 h-4 w-4" />
                           Mark as Shipped
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Cancelled')}>
+                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Cancelled')}
+                         disabled={item.status === "Cancelled"}  
+                        >
                           <X className="mr-2 h-4 w-4" />
                           Mark as Cancelled
                         </DropdownMenuItem>

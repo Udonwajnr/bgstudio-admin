@@ -25,8 +25,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link'
+import api from '@/app/axios/axiosConfig'
+import {toast} from "sonner"
 
-export default function ShippingTable({ data }) {
+export default function PoultryShippingTable({ data }) {
+  const [shippingData, setShippingData] = useState(data)
   const [filters, setFilters] = useState({
     customerName: '',
     status: '',
@@ -34,7 +37,7 @@ export default function ShippingTable({ data }) {
     endDate: null,
   })
 
-  const filteredData = data.filter((item) => {
+  const filteredData = shippingData.filter((item) => {
     return (
       item.customerName.toLowerCase().includes(filters.customerName.toLowerCase()) &&
       (filters.status === '' || item.status === filters.status) &&
@@ -47,13 +50,25 @@ export default function ShippingTable({ data }) {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleStatusChange = (id, newStatus) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item._id === id ? { ...item, status: newStatus } : item
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      // Send API request to update the status
+      await api.patch(`https://bgstudiobackend-1.onrender.com/api/poultry-shipping/${id}/status`, {
+        status: newStatus,
+      });
+  
+      // Update the local state immediately
+      setShippingData((prevData) =>
+        prevData.map((item) =>
+          item._id === id ? { ...item, status: newStatus } : item
+        )
       )
-    )
-  }
+      toast.success("Shipping status updated")
+    } catch (error) {
+      console.error("Error updating shipping status:", error);
+      toast.error("Failed to update shipping status")
+    }
+  };
 
   const handleEdit = (id) => {
     // Implement edit functionality
@@ -82,7 +97,6 @@ export default function ShippingTable({ data }) {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                {/* <SelectItem value="">All Statuses</SelectItem> */}
                 <SelectItem value="Pending">Pending</SelectItem>
                 <SelectItem value="Shipped">Shipped</SelectItem>
                 <SelectItem value="Out for Delivery">Out for Delivery</SelectItem>
@@ -171,21 +185,30 @@ export default function ShippingTable({ data }) {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem>
-                          <Link href={`/dashboard/shipping/${item._id}`} className="flex gap-x-2 items-center">
+                          <Link href={`/dashboard/shipping/poultry-Shipping/${item._id}`} className="flex gap-x-2 items-center">
                             <Eye className="mr-2 h-4 w-4 " />
                             View
                           </Link> 
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Delivered')}>
+                        <DropdownMenuItem
+                         onClick={() => handleStatusChange(item._id, 'Delivered')}
+                         disabled={item.status === "Delivered"}
+                         >
                           <Check className="mr-2 h-4 w-4" />
                           Mark as Delivered
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Shipped')}>
+                        <DropdownMenuItem 
+                         onClick={() => handleStatusChange(item._id, 'Shipped')}
+                         disabled={item.status === "Shipped"}
+                        >
                           <Truck className="mr-2 h-4 w-4" />
                           Mark as Shipped
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleStatusChange(item._id, 'Cancelled')}>
+                        <DropdownMenuItem 
+                         onClick={() => handleStatusChange(item._id, 'Cancelled')}
+                         disabled={item.status === "Cancelled"}
+                        >
                           <X className="mr-2 h-4 w-4" />
                           Mark as Cancelled
                         </DropdownMenuItem>
