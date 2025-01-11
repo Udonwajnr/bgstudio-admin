@@ -19,14 +19,14 @@ export default function HairProductForm() {
     price: '',
     quantity: '',
     wigStyle: '',
-    hairLength: '',
+    hairLength: [''],
     hairColor: '',
     density: '',
     capSize: '',
     capType: '',
     productType: '',
-    targetHairTypes: "",
-    hairConcerns: "",
+    targetHairTypes: '',
+    hairConcerns: '',
     size: '',
     scent: '',
     brand: '',
@@ -40,9 +40,9 @@ export default function HairProductForm() {
   const [imagePreviews, setImagePreviews] = useState([]);
   const [videoPreview, setVideoPreview] = useState(null);
 
-  const API_ENDPOINT = 'https://bgstudiobackend-1.onrender.com/api/hair'; // Replace with your API endpoint
+  const API_ENDPOINT = 'https://bgstudiobackend-1.onrender.com/api/hair';
+  const router = useRouter();
 
-  const router = useRouter()
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -51,10 +51,27 @@ export default function HairProductForm() {
     }));
   };
 
-  const handleSelectChange = (id, value) => {
+  const handleHairLengthChange = (index, value) => {
+    const updatedLengths = [...formData.hairLength];
+    updatedLengths[index] = value;
     setFormData((prev) => ({
       ...prev,
-      [id]: value,
+      hairLength: updatedLengths,
+    }));
+  };
+
+  const addInputField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      hairLength: [...prev.hairLength, ''],
+    }));
+  };
+
+  const removeInputField = (index) => {
+    const updatedLengths = formData.hairLength.filter((_, i) => i !== index);
+    setFormData((prev) => ({
+      ...prev,
+      hairLength: updatedLengths,
     }));
   };
 
@@ -65,9 +82,7 @@ export default function HairProductForm() {
         ...prev,
         photos: files ? Array.from(files) : [],
       }));
-      setImagePreviews(
-        files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []
-      );
+      setImagePreviews(files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []);
     } else if (type === 'video') {
       const file = files[0];
       setFormData((prev) => ({
@@ -83,42 +98,41 @@ export default function HairProductForm() {
     setIsLoading(true);
 
     try {
-      // Prepare FormData for file uploads
       const payload = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         if (key === 'photos' && Array.isArray(value)) {
           value.forEach((file) => payload.append('photos', file));
         } else if (key === 'video' && value) {
           payload.append('video', value);
+        } else if (key === 'hairLength' && Array.isArray(value)) {
+          value.forEach((length) => payload.append('hairLength', length));
         } else {
           payload.append(key, value);
         }
       });
       payload.append('category', category);
 
-      // Send API request
       const response = await api.post(API_ENDPOINT, payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       toast.success('Product submitted successfully!');
-      console.log('API Response:', response.data);
-      router.push('/dashboard/hair')
-      // Reset form
+      router.push('/dashboard/hair');
+
       setFormData({
         name: '',
         description: '',
         price: '',
         quantity: '',
         wigStyle: '',
-        hairLength: '',
+        hairLength: [''],
         hairColor: '',
         density: '',
         capSize: '',
         capType: '',
         productType: '',
-        targetHairTypes: "",
-        hairConcerns: "",
+        targetHairTypes: '',
+        hairConcerns: '',
         size: '',
         scent: '',
         brand: '',
@@ -136,7 +150,8 @@ export default function HairProductForm() {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
+
   
   
   return (
@@ -201,7 +216,7 @@ export default function HairProductForm() {
           <>
             <div>
               <Label htmlFor="wigStyle">Wig Style</Label>
-              <Select
+              {/* <Select
                 onValueChange={(value) => handleSelectChange('wigStyle', value)}
               >
                 <SelectTrigger>
@@ -212,16 +227,34 @@ export default function HairProductForm() {
                   <SelectItem value="straight">Straight</SelectItem>
                   <SelectItem value="wavy">Wavy</SelectItem>
                 </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="hairLength">Hair Length</Label>
+              </Select> */}
+
               <Input
-                id="hairLength"
-                placeholder="e.g., 14 inches"
+                id="wigStyle"
+                placeholder="e.g., Curly"
                 onChange={handleChange}
               />
+              
             </div>
+            <div>
+                <Label htmlFor="hairLength">Hair Length</Label>
+                {formData.hairLength.map((length, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <Input
+                      id={`hairLength-${index}`}
+                      placeholder="e.g., 14 inches"
+                      value={length}
+                      onChange={(e) => handleHairLengthChange(index, e.target.value)}
+                    />
+                    {index === formData.hairLength.length - 1 && (
+                      <button type="button" onClick={addInputField} className="px-2 py-1 bg-green-500 text-white rounded">+</button>
+                    )}
+                    {formData.hairLength.length > 1 && (
+                      <button type="button" onClick={() => removeInputField(index)} className="px-2 py-1 bg-red-500 text-white rounded">-</button>
+                    )}
+                  </div>
+                ))}
+             </div>
             <div>
               <Label htmlFor="hairColor">Hair Color</Label>
               <Input id="hairColor" placeholder="e.g., Black, Blonde, Brown" />
@@ -238,7 +271,7 @@ export default function HairProductForm() {
 
             <div>
               <Label htmlFor="capSize">Cap Size</Label>
-              <Select
+              {/* <Select
                 onValueChange={(value) => handleSelectChange('capSize', value)}
               >
                 <SelectTrigger>
@@ -249,12 +282,19 @@ export default function HairProductForm() {
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="large">Large</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
+
+              <Input
+                id="capSize"
+                placeholder="Medium size"
+                onChange={handleChange}
+              />
+
             </div>
 
             <div>
               <Label htmlFor="capType">Cap Type</Label>
-              <Select
+              {/* <Select
                 onValueChange={(value) => handleSelectChange('capType', value)}
               >
                 <SelectTrigger>
@@ -265,7 +305,13 @@ export default function HairProductForm() {
                   <SelectItem value="full-lace">Full Lace</SelectItem>
                   <SelectItem value="front-lace">Front Lace</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
+
+              <Input
+                id="capType"
+                placeholder="Medium size"
+                onChange={handleChange}
+              />
             </div>
 
           </>
@@ -275,7 +321,7 @@ export default function HairProductForm() {
           <>
             <div>
               <Label htmlFor="productType">Product Type</Label>
-              <Select
+              {/* <Select
                 onValueChange={(value) =>
                   handleSelectChange('productType', value)
                 }
@@ -288,7 +334,13 @@ export default function HairProductForm() {
                   <SelectItem value="conditioner">Conditioner</SelectItem>
                   <SelectItem value="oil">Oil</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
+
+              <Input
+            id="productType"
+            placeholder="Shampoo"
+            onChange={handleChange}
+          />
             </div>
           </>
         )}
