@@ -10,32 +10,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"; // Optional for user feedback
 import api from "@/app/axios/axiosConfig";
 import { useRouter, useParams } from "next/navigation";
+import { Switch } from "@/components/ui/switch"
 
 export default function EditHairProductForm() {
   const [category, setCategory] = useState("wig");
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    quantity: "",
-    wigStyle: "",
-    hairLength: "",
-    hairColor: "",
-    density: "",
-    capSize: "",
-    capType: "",
-    productType: "",
-    targetHairTypes: "",
-    hairConcerns: "",
-    size: "",
-    scent: "",
-    brand: "",
-    careInstructions: "",
-    tags: "",
-    discountPrice: "",
-    photos: [],
-    video: null,
+    name: '',
+        description: '',
+        price: '',
+        quantity: '',
+        wigStyle: '',
+        hairLength: [''],
+        hairColor: [''],
+        density: '',
+        capSize: '',
+        capType: '',
+        productType: '',
+        targetHairTypes: '',
+        hairConcerns: '',
+        size: '',
+        scent: '',
+        brand: '',
+        careInstructions: '',
+        tags: '',
+        discountPrice: '',
+        adjustableStraps: false,
+        photos: [],
+        video: null,
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [videoPreview, setVideoPreview] = useState(null);
@@ -66,8 +69,8 @@ export default function EditHairProductForm() {
           price: data.price,
           quantity: data.quantity,
           wigStyle: data.wigStyle || "",
-          hairLength: data.hairLength || "",
-          hairColor: data.hairColor || "",
+          hairLength: data.hairLength || [''],
+          hairColor: data.hairColor || [''],
           density: data.density || "",
           capSize: data.capSize || "",
           capType: data.capType || "",
@@ -82,6 +85,7 @@ export default function EditHairProductForm() {
           discountPrice: data.discountPrice || "",
           photos:data.photos || [],
           video:data.video || null,
+          adjustableStraps:data.adjustableStraps|| false,
         });
         setCategory(data.category);
       } catch (error) {
@@ -97,9 +101,67 @@ export default function EditHairProductForm() {
     const { id, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [id]: type === "checkbox" ? checked : value,
+      [id]: type === 'checkbox' ? checked : value,
     }));
   };
+
+  
+  // Handle switch toggle specifically for adjustableStraps
+  const handleSwitchChange = () => {
+    setFormData((prevState) => ({
+      ...prevState,
+      adjustableStraps: !prevState.adjustableStraps,
+    }));
+  };
+
+
+  const handleHairLengthChange = (index, value) => {
+    const updatedLengths = [...formData.hairLength];
+    updatedLengths[index] = value;
+    setFormData((prev) => ({
+      ...prev,
+      hairLength: updatedLengths,
+    }));
+  };
+
+  const addInputField = () => {
+    setFormData((prev) => ({
+      ...prev,
+      hairLength: [...prev.hairLength, ''],
+    }));
+  };
+
+  const removeInputField = (index) => {
+    const updatedLengths = formData.hairLength.filter((_, i) => i !== index);
+    setFormData((prev) => ({
+      ...prev,
+      hairLength: updatedLengths,
+    }));
+  };
+
+  const handleHairColorChange = (index, value) => {
+    const updatedColors = [...formData.hairColor];
+    updatedColors[index] = value;
+    setFormData((prev) => ({
+      ...prev,
+      hairColor: updatedColors,
+    }));
+  };
+
+const addHairColorField = () => {
+  setFormData((prev) => ({
+    ...prev,
+    hairColor: [...prev.hairColor, ''],
+  }));
+};
+
+const removeHairColorField = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    hairColor: prev.hairColor.filter((_, i) => i !== index),
+  }));
+};
+
 
   const handleSelectChange = (id, value) => {
     setFormData((prev) => ({
@@ -140,7 +202,11 @@ export default function EditHairProductForm() {
           value.forEach((file) => payload.append("photos", file));
         } else if (key === "video" && value) {
           payload.append("video", value);
-        } else {
+        } else if (key === 'hairLength' && Array.isArray(value)) {
+          value.forEach((length) => payload.append('hairLength', length));
+        }else if (key === 'hairColor' && Array.isArray(value)) {
+          value.forEach((length) => payload.append('hairColor', length));
+        }else {
           payload.append(key, value);
         }
       });
@@ -232,6 +298,188 @@ export default function EditHairProductForm() {
         </div>
 
         {/* Add other fields and handle category-specific inputs similarly */}
+           {category === 'wig' && (
+                  <>
+                    <div>
+                      <Label htmlFor="wigStyle">Wig Style</Label>
+                      {/* <Select
+                        onValueChange={(value) => handleSelectChange('wigStyle', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select style" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="curly">Curly</SelectItem>
+                          <SelectItem value="straight">Straight</SelectItem>
+                          <SelectItem value="wavy">Wavy</SelectItem>
+                        </SelectContent>
+                      </Select> */}
+        
+                      <Input
+                        id="wigStyle"
+                        placeholder="e.g., Curly"
+                        onChange={handleChange}
+                      />
+                      
+                    </div>
+                    <div>
+                        <Label htmlFor="hairLength">Hair Length</Label>
+                        {formData.hairLength.map((length, index) => (
+                          <div key={index} className="flex items-center space-x-2 mb-2">
+                            <Input
+                              id={`hairLength-${index}`}
+                              placeholder="e.g., 14 inches"
+                              value={length}
+                              onChange={(e) => handleHairLengthChange(index, e.target.value)}
+                            />
+                            {index === formData.hairLength.length - 1 && (
+                              <button type="button" onClick={addInputField} className="px-2 py-1 bg-green-500 text-white rounded">+</button>
+                            )}
+                            {formData.hairLength.length > 1 && (
+                              <button type="button" onClick={() => removeInputField(index)} className="px-2 py-1 bg-red-500 text-white rounded">-</button>
+                            )}
+                          </div>
+                        ))}
+                     </div>
+        
+                    <div>
+                      <Label htmlFor="density">Density</Label>
+                      <Input
+                        id="density"
+                        placeholder="Enter density (e.g., 150%)"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    
+                 {/* <div>
+                      <label htmlFor="adjustableStraps">
+                      Adjustable Straps
+                      <input
+                        type="checkbox"
+                        id="adjustableStraps"
+                        checked={formData.adjustableStraps}
+                        onChange={handleChange}
+                      />
+                    </label>
+                  </div> */}
+        
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between space-x-2">
+                    <Label
+                      htmlFor="adjustableStraps"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    > 
+                      Adjustable Straps
+                    </Label>
+                    <Switch
+                      id="adjustableStraps"
+                      checked={formData.adjustableStraps}
+                      onCheckedChange={handleSwitchChange}
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Enable this option for straps that can be adjusted to fit your comfort level.
+                  </p>
+                </div>
+        
+        
+               <div>
+                <Label htmlFor="hairLength">Hair Color</Label>
+                      {formData.hairColor.map((color, index) => (
+                        <div key={index}>
+                          <Input
+                            id={`hairColor-${index}`}
+                            type="text"
+                            placeholder="Hair Color"
+                            value={color}
+                            onChange={(e) => handleHairColorChange(index, e.target.value)}
+                          />
+                          <button type="button" onClick={() => removeHairColorField(index)} className="px-2 py-1 bg-red-500 text-white rounded">
+                            -
+                          </button>
+                        </div>
+                      ))}
+                      <button type="button" onClick={addHairColorField} className="px-2 py-1 bg-green-500 text-white rounded">
+                        + Add Hair Color
+                      </button>
+                 </div>
+        
+        
+                    <div>
+                      <Label htmlFor="capSize">Cap Size</Label>
+                      {/* <Select
+                        onValueChange={(value) => handleSelectChange('capSize', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select cap size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">Small</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="large">Large</SelectItem>
+                        </SelectContent>
+                      </Select> */}
+        
+                      <Input
+                        id="capSize"
+                        placeholder="Medium size"
+                        onChange={handleChange}
+                      />
+        
+                    </div>
+        
+                    <div>
+                      <Label htmlFor="capType">Cap Type</Label>
+                      {/* <Select
+                        onValueChange={(value) => handleSelectChange('capType', value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select cap type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="lace">Lace</SelectItem>
+                          <SelectItem value="full-lace">Full Lace</SelectItem>
+                          <SelectItem value="front-lace">Front Lace</SelectItem>
+                        </SelectContent>
+                      </Select> */}
+        
+                      <Input
+                        id="capType"
+                        placeholder="Medium size"
+                        onChange={handleChange}
+                      />
+                    </div>
+        
+                  </>
+                )}
+        
+                {category === 'hairProduct' && (
+                  <>
+                    <div>
+                      <Label htmlFor="productType">Product Type</Label>
+                      {/* <Select
+                        onValueChange={(value) =>
+                          handleSelectChange('productType', value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select product type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="shampoo">Shampoo</SelectItem>
+                          <SelectItem value="conditioner">Conditioner</SelectItem>
+                          <SelectItem value="oil">Oil</SelectItem>
+                        </SelectContent>
+                      </Select> */}
+        
+                      <Input
+                    id="productType"
+                    placeholder="Shampoo"
+                    onChange={handleChange}
+                  />
+                    </div>
+                  </>
+                )}
 
          {/* Photo Upload */}
          <div>

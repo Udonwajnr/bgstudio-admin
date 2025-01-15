@@ -11,30 +11,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"; // Optional for user feedback
 import api from '@/app/axios/axiosConfig';
 import { useRouter } from 'next/navigation';
+import { Switch } from "@/components/ui/switch"
+
 export default function HairProductForm() {
   const [category, setCategory] = useState('wig');
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    price: '',
-    quantity: '',
-    wigStyle: '',
-    hairLength: [''],
-    hairColor: '',
-    density: '',
-    capSize: '',
-    capType: '',
-    productType: '',
-    targetHairTypes: '',
-    hairConcerns: '',
-    size: '',
-    scent: '',
-    brand: '',
-    careInstructions: '',
-    tags: '',
-    discountPrice: '',
-    photos: [],
-    video: null,
+        description: '',
+        price: '',
+        quantity: '',
+        wigStyle: '',
+        hairLength: [''],
+        hairColor: [''],
+        density: '',
+        capSize: '',
+        capType: '',
+        productType: '',
+        targetHairTypes: '',
+        hairConcerns: '',
+        size: '',
+        scent: '',
+        brand: '',
+        careInstructions: '',
+        tags: '',
+        discountPrice: '',
+        adjustableStraps: false,
+        photos: [],
+        video: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -50,6 +53,14 @@ export default function HairProductForm() {
       [id]: type === 'checkbox' ? checked : value,
     }));
   };
+  // Handle switch toggle specifically for adjustableStraps
+  const handleSwitchChange = () => {
+    setFormData((prevState) => ({
+      ...prevState,
+      adjustableStraps: !prevState.adjustableStraps,
+    }));
+  };
+
 
   const handleHairLengthChange = (index, value) => {
     const updatedLengths = [...formData.hairLength];
@@ -74,6 +85,29 @@ export default function HairProductForm() {
       hairLength: updatedLengths,
     }));
   };
+
+  const handleHairColorChange = (index, value) => {
+    const updatedColors = [...formData.hairColor];
+    updatedColors[index] = value;
+    setFormData((prev) => ({
+      ...prev,
+      hairColor: updatedColors,
+    }));
+  };
+
+const addHairColorField = () => {
+  setFormData((prev) => ({
+    ...prev,
+    hairColor: [...prev.hairColor, ''],
+  }));
+};
+
+const removeHairColorField = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    hairColor: prev.hairColor.filter((_, i) => i !== index),
+  }));
+};
 
   const handleFileChange = (e, type) => {
     const files = e.target.files;
@@ -106,7 +140,11 @@ export default function HairProductForm() {
           payload.append('video', value);
         } else if (key === 'hairLength' && Array.isArray(value)) {
           value.forEach((length) => payload.append('hairLength', length));
-        } else {
+        }else if (key === 'hairColor' && Array.isArray(value)) {
+          value.forEach((length) => payload.append('hairColor', length));
+        }
+        
+        else {
           payload.append(key, value);
         }
       });
@@ -126,7 +164,7 @@ export default function HairProductForm() {
         quantity: '',
         wigStyle: '',
         hairLength: [''],
-        hairColor: '',
+        hairColor: [''],
         density: '',
         capSize: '',
         capType: '',
@@ -139,6 +177,7 @@ export default function HairProductForm() {
         careInstructions: '',
         tags: '',
         discountPrice: '',
+        adjustableStraps: false,
         photos: [],
         video: null,
       });
@@ -152,7 +191,7 @@ export default function HairProductForm() {
     }
   };
 
-  
+  console.log(formData)
   
   return (
     <div className="flex-1 p-8 pt-6">
@@ -195,7 +234,7 @@ export default function HairProductForm() {
             onChange={handleChange}
           />
         </div>
-
+ 
         <div>
           <Label htmlFor="price">Price</Label>
           <Input
@@ -255,10 +294,6 @@ export default function HairProductForm() {
                   </div>
                 ))}
              </div>
-            <div>
-              <Label htmlFor="hairColor">Hair Color</Label>
-              <Input id="hairColor" placeholder="e.g., Black, Blonde, Brown" />
-            </div>
 
             <div>
               <Label htmlFor="density">Density</Label>
@@ -268,6 +303,60 @@ export default function HairProductForm() {
                 onChange={handleChange}
               />
             </div>
+            
+         {/* <div>
+              <label htmlFor="adjustableStraps">
+              Adjustable Straps
+              <input
+                type="checkbox"
+                id="adjustableStraps"
+                checked={formData.adjustableStraps}
+                onChange={handleChange}
+              />
+            </label>
+          </div> */}
+
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center justify-between space-x-2">
+            <Label
+              htmlFor="adjustableStraps"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            > 
+              Adjustable Straps
+            </Label>
+            <Switch
+              id="adjustableStraps"
+              checked={formData.adjustableStraps}
+              onCheckedChange={handleSwitchChange}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Enable this option for straps that can be adjusted to fit your comfort level.
+          </p>
+        </div>
+
+
+       <div>
+        <Label htmlFor="hairLength">Hair Color</Label>
+              {formData.hairColor.map((color, index) => (
+                <div key={index}>
+                  <Input
+                    id={`hairColor-${index}`}
+                    type="text"
+                    placeholder="Hair Color"
+                    value={color}
+                    onChange={(e) => handleHairColorChange(index, e.target.value)}
+                  />
+                  <button type="button" onClick={() => removeHairColorField(index)} className="px-2 py-1 bg-red-500 text-white rounded">
+                    -
+                  </button>
+                </div>
+              ))}
+              <button type="button" onClick={addHairColorField} className="px-2 py-1 bg-green-500 text-white rounded">
+                + Add Hair Color
+              </button>
+         </div>
+
 
             <div>
               <Label htmlFor="capSize">Cap Size</Label>
@@ -377,7 +466,70 @@ export default function HairProductForm() {
 
 
       {/* Photo Upload */}
-      
+       {/* Photo Upload */}
+         <div>
+          <Label>Upload Photos</Label>
+          <Input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, 'photos')}
+          />
+          <div className="flex flex-wrap gap-2 mt-2">
+            {formData.photos.map((src, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={typeof src === 'string' ? src : URL.createObjectURL(src)}
+                  alt={`Preview ${index + 1}`}
+                  className="w-20 h-20 object-cover rounded"
+                />
+                <button
+                  type="button"
+                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                  onClick={() => {
+                    const updatedPhotos = formData.photos.filter((_, i) => i !== index);
+                    setFormData((prev) => ({ ...prev, photos: updatedPhotos }));
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Video Upload */}
+        <div>
+          <Label>Upload Video</Label>
+          <Input
+            type="file"
+            accept="video/*"
+            onChange={(e) => handleFileChange(e, 'video')}
+          />
+          {videoPreview || formData.video ? (
+            <div className="mt-2 relative">
+              <video
+                src={
+                  typeof formData.video === 'string'
+                    ? formData.video
+                    : videoPreview || URL.createObjectURL(formData.video)
+                }
+                controls
+                className="w-full max-w-md rounded"
+              />
+              <button
+                type="button"
+                className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                onClick={() => {
+                  setFormData((prev) => ({ ...prev, video: null }));
+                  setVideoPreview(null);
+                }}
+              >
+                &times;
+              </button>
+            </div>
+          ) : null}
+        </div>
         {/* Submit Button */}
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Submitting...' : 'Submit'}
