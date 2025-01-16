@@ -36,12 +36,16 @@ export default function EditHairProductForm() {
         discountPrice: '',
         adjustableStraps: false,
         photos: [],
+        returnPolicy:"",
         video: null,
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [videoPreview, setVideoPreview] = useState(null);
+  const [imageTypeError,setImageTypeError] = useState(null)
+  const [videoTypeError,setVideoTypeError] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
   
@@ -86,6 +90,7 @@ export default function EditHairProductForm() {
           photos:data.photos || [],
           video:data.video || null,
           adjustableStraps:data.adjustableStraps|| false,
+          returnPolicy:data.returnPolicy || "",
         });
         setCategory(data.category);
       } catch (error) {
@@ -172,16 +177,32 @@ const removeHairColorField = (index) => {
 
   const handleFileChange = (e, type) => {
     const files = e.target.files;
-    if (type === "photos") {
+  
+    if (type === 'photos') {
+      const allowedPhotoTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      const invalidPhotos = Array.from(files).filter(
+        (file) => !allowedPhotoTypes.includes(file.type)
+      );
+  
+      if (invalidPhotos.length > 0) {
+        setImageTypeError('Only JPG, JPEG, and PNG images are allowed.')
+        setTimeout(()=>{
+          setImageTypeError("")
+        },5000)
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
         photos: files ? Array.from(files) : [],
       }));
-      setImagePreviews(
-        files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []
-      );
-    } else if (type === "video") {
+      setImagePreviews(files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []);
+    } else if (type === 'video') {
       const file = files[0];
+      if (file && file.type !== 'video/mp4') {
+        setVideoTypeError("Only MP4 videos are allowed.")
+        return;
+      }
+  
       setFormData((prev) => ({
         ...prev,
         video: file,
@@ -217,7 +238,7 @@ const removeHairColorField = (index) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success("Product updated successfully!");
+      toast.success("Product Updated successfully!");
       console.log("API Response:", response.data);
       router.push("/dashboard/hair");
     } catch (error) {
@@ -480,6 +501,15 @@ const removeHairColorField = (index) => {
                     </div>
                   </>
                 )}
+            <div>
+            <Label htmlFor="careInstructions">Return Policy</Label>
+            <Textarea
+              id="returnPolicy"
+              placeholder="Enter care instructions"
+              onChange={handleChange}
+            />
+          </div>
+
 
          {/* Photo Upload */}
          <div>
@@ -490,6 +520,9 @@ const removeHairColorField = (index) => {
             accept="image/*"
             onChange={(e) => handleFileChange(e, 'photos')}
           />
+          {
+            imageTypeError && <p className='text-red-500'>{imageTypeError}</p>
+          }
           <div className="flex flex-wrap gap-2 mt-2">
             {formData.photos.map((src, index) => (
               <div key={index} className="relative">
@@ -521,6 +554,9 @@ const removeHairColorField = (index) => {
             accept="video/*"
             onChange={(e) => handleFileChange(e, 'video')}
           />
+          {
+            videoTypeError && <p className='text-red'>{videoTypeError}</p>
+          }
           {videoPreview || formData.video ? (
             <div className="mt-2 relative">
               <video
