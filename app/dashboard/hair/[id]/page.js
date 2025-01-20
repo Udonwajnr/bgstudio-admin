@@ -84,7 +84,7 @@ export default function ProductPage() {
               src={product.photos[currentImageIndex] || '/placeholder.svg'}
               alt={`${product.name} - view ${currentImageIndex + 1}`}
               fill
-              className="object-cover rounded-lg"
+              className="object-cover rounded-lg w-full"
             />
             <Button
               variant="outline"

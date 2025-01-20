@@ -117,13 +117,13 @@ const handleFileChange = (e, type) => {
   const files = e.target.files;
 
   if (type === 'photos') {
-    const allowedPhotoTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const allowedPhotoTypes = ['image/jpeg', 'image/png', 'image/jpg','image/webp'];
     const invalidPhotos = Array.from(files).filter(
       (file) => !allowedPhotoTypes.includes(file.type)
     );
 
     if (invalidPhotos.length > 0) {
-      setImageTypeError('Only JPG, JPEG, and PNG images are allowed.')
+      setImageTypeError('Only JPG, JPEG, webp and PNG images are allowed.')
       setTimeout(()=>{
         setImageTypeError("")
       },5000)
@@ -131,7 +131,7 @@ const handleFileChange = (e, type) => {
     }
     setFormData((prev) => ({
       ...prev,
-      photos: files ? Array.from(files) : [],
+      photos: [...prev.photos, ...Array.from(files)],
     }));
     setImagePreviews(files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []);
   } else if (type === 'video') {
@@ -140,7 +140,6 @@ const handleFileChange = (e, type) => {
       setVideoTypeError("Only MP4 videos are allowed.")
       return;
     }
-
     setFormData((prev) => ({
       ...prev,
       video: file,

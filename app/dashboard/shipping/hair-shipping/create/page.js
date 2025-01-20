@@ -7,7 +7,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
 
-export function ShippingForm({ onSubmit }) {
+export default function ShippingForm({ onSubmit }) {
   const [formData, setFormData] = useState({
     orderId: '',
     customerName: '',

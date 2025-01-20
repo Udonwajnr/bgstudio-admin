@@ -167,7 +167,6 @@ const removeHairColorField = (index) => {
   }));
 };
 
-
   const handleSelectChange = (id, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -179,27 +178,39 @@ const removeHairColorField = (index) => {
     const files = e.target.files;
   
     if (type === 'photos') {
-      const allowedPhotoTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      const allowedPhotoTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+  
+      // Filter out invalid file types
       const invalidPhotos = Array.from(files).filter(
         (file) => !allowedPhotoTypes.includes(file.type)
       );
   
       if (invalidPhotos.length > 0) {
-        setImageTypeError('Only JPG, JPEG, and PNG images are allowed.')
-        setTimeout(()=>{
-          setImageTypeError("")
-        },5000)
+        setImageTypeError('Only JPG, JPEG, WEBP, and PNG images are allowed.');
+        setTimeout(() => {
+          setImageTypeError('');
+        }, 5000);
         return;
       }
+  
+      // Append new files to existing ones
       setFormData((prev) => ({
         ...prev,
-        photos: files ? Array.from(files) : [],
+        photos: [...prev.photos, ...Array.from(files)],
       }));
-      setImagePreviews(files ? Array.from(files).map((file) => URL.createObjectURL(file)) : []);
+  
+      // Append new previews
+      setImagePreviews((prev) => [
+        ...prev,
+        ...Array.from(files).map((file) => URL.createObjectURL(file)),
+      ]);
     } else if (type === 'video') {
       const file = files[0];
       if (file && file.type !== 'video/mp4') {
-        setVideoTypeError("Only MP4 videos are allowed.")
+        setVideoTypeError('Only MP4 videos are allowed.');
+        setTimeout(() => {
+          setVideoTypeError('');
+        }, 5000);
         return;
       }
   
@@ -210,6 +221,7 @@ const removeHairColorField = (index) => {
       setVideoPreview(file ? URL.createObjectURL(file) : null);
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
